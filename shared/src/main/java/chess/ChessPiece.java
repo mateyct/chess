@@ -67,6 +67,12 @@ public class ChessPiece {
         }
     }
 
+    /**
+     * A helper method to handle the possible pawn move locations.
+     * @param board The board being played on.
+     * @param myPosition The starting location.
+     * @return A collection of all possible moves.
+     */
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
         // get movement based on color
         int direction = pieceColor == ChessGame.TeamColor.WHITE ? 1 : -1;
@@ -95,6 +101,12 @@ public class ChessPiece {
         return moves;
     }
 
+    /**
+     * A helper method for handling a legal pawn position. Handles case where it's a promotion spot.
+     * @param moves The Collection of moves to add to.
+     * @param startPosition The starting position of the move.
+     * @param endPosition The ending position of the move.
+     */
     private void addPawnMove(Collection<ChessMove> moves, ChessPosition startPosition, ChessPosition endPosition) {
         if (endPosition.getRow() == 8 && pieceColor == ChessGame.TeamColor.WHITE || endPosition.getRow() == 1 && pieceColor == ChessGame.TeamColor.BLACK) {
             for (PieceType pType : PROMOTION_TYPES) {
@@ -105,6 +117,13 @@ public class ChessPiece {
         moves.add(new ChessMove(startPosition, endPosition, null));
     }
 
+    /**
+     * A helper method to check if this piece can legally move to a spot.
+     * @param board The board being played on.
+     * @param position The desired location.
+     * @param forCapture Whether this move is a capture move.
+     * @return Whether the piece can move here.
+     */
     private boolean checkOpenSpot(ChessBoard board, ChessPosition position, boolean forCapture) {
         int row = position.getRow();
         int col = position.getColumn();
