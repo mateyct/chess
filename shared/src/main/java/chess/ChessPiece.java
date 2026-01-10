@@ -63,8 +63,37 @@ public class ChessPiece {
             case PAWN -> {
                 return pawnMoves(board, myPosition);
             }
+            case KNIGHT -> {
+                return knightMoves(board, myPosition);
+            }
             default -> throw new RuntimeException("Not implemented");
         }
+    }
+
+    /**
+     * A helper method to handle the possible knight move locations.
+     * @param board The board being played on.
+     * @param myPosition The starting location.
+     * @return A collection of all possible moves.
+     */
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        ChessPosition[] possiblePositions = {
+            new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn() - 1),
+            new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn() + 1),
+            new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn() - 1),
+            new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn() + 1),
+            new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 2),
+            new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 2),
+            new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 2),
+            new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 2),
+        };
+        for (ChessPosition position : possiblePositions) {
+            if (checkOpenSpot(board, position, false) || checkOpenSpot(board, position, true)) {
+                moves.add(new ChessMove(myPosition, position, null));
+            }
+        }
+        return moves;
     }
 
     /**
