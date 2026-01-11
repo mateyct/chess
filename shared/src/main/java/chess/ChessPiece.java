@@ -66,7 +66,58 @@ public class ChessPiece {
             case KNIGHT -> {
                 return knightMoves(board, myPosition);
             }
+            case ROOK -> {
+                return rookMoves(board, myPosition);
+            }
             default -> throw new RuntimeException("Not implemented");
+        }
+    }
+
+    /**
+     * A helper method to handle the possible rook move locations.
+     * @param board The board being played on.
+     * @param myPosition The starting location.
+     * @return A collection of all possible moves.
+     */
+    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        // go up
+        loopMoveDirection(board, myPosition, moves, 1, 0);
+        // go left
+        loopMoveDirection(board, myPosition, moves, 0, -1);
+        // go right
+        loopMoveDirection(board, myPosition, moves, 0, 1);
+        // go down
+        loopMoveDirection(board, myPosition, moves, -1, 0);
+        return moves;
+    }
+
+    /**
+     * A helper method to determine possible spots for pieces that can move continuously across the board.
+     * @param board The board being played on.
+     * @param myPosition The starting position.
+     * @param moves The collection of ChessMove to add to.
+     * @param up 1, 0, -1, depending on direction of movement.
+     * @param right 1, 0, -1, depending on direction of movement.
+     */
+    private void loopMoveDirection (ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int up, int right) {
+        boolean canContinue = true;
+        ChessPosition currentPositionCheck = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
+        while (canContinue) {
+            canContinue = false;
+            ChessPosition newPosition = new ChessPosition(currentPositionCheck.getRow() + up, currentPositionCheck.getColumn() + right);
+            // check normal move
+            if (checkOpenSpot(board, newPosition, false)) {
+                ChessMove move = new ChessMove(myPosition, newPosition, null);
+                moves.add(move);
+                canContinue = true;
+            }
+            // check capture move
+            else if (checkOpenSpot(board, newPosition, true)) {
+                ChessMove move = new ChessMove(myPosition, newPosition, null);
+                moves.add(move);
+            }
+            currentPositionCheck = newPosition;
         }
     }
 
