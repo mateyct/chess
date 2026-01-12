@@ -75,10 +75,39 @@ public class ChessPiece {
             case QUEEN -> {
                 return queenMoves(board, myPosition);
             }
-            default -> throw new RuntimeException("Not implemented");
+            case KING -> {
+                return kingMoves(board, myPosition);
+            }
+            default -> throw new RuntimeException("Invalid piece type.");
         }
     }
 
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        ChessPosition[] possiblePositions = {
+            new ChessPosition(myPosition.getRow(), myPosition.getColumn() - 1),
+            new ChessPosition(myPosition.getRow(), myPosition.getColumn() + 1),
+            new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn()),
+            new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()),
+            new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1),
+            new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1),
+            new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1),
+            new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1),
+        };
+        for (ChessPosition position : possiblePositions) {
+            if (checkOpenSpot(board, position, false) || checkOpenSpot(board, position, true)) {
+                moves.add(new ChessMove(myPosition, position, null));
+            }
+        }
+        return moves;
+    }
+
+    /**
+     * A helper method to handle the possible queen move locations.
+     * @param board The board being played on.
+     * @param myPosition The starting location.
+     * @return A collection of all possible moves.
+     */
     private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
         moves.addAll(bishopMoves(board, myPosition));
