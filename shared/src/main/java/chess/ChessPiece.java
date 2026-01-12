@@ -69,8 +69,30 @@ public class ChessPiece {
             case ROOK -> {
                 return rookMoves(board, myPosition);
             }
+            case BISHOP -> {
+                return bishopMoves(board, myPosition);
+            }
             default -> throw new RuntimeException("Not implemented");
         }
+    }
+
+    /**
+     * A helper method to handle the possible bishop move locations.
+     * @param board The board being played on.
+     * @param myPosition The starting location.
+     * @return A collection of all possible moves.
+     */
+    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        // go up-left
+        loopMoveDirection(board, myPosition, moves, 1, -1);
+        // go up-right
+        loopMoveDirection(board, myPosition, moves, 1, 1);
+        // go down-left
+        loopMoveDirection(board, myPosition, moves, -1, -1);
+        // go down-right
+        loopMoveDirection(board, myPosition, moves, -1, 1);
+        return moves;
     }
 
     /**
