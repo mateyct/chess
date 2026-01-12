@@ -72,8 +72,18 @@ public class ChessPiece {
             case BISHOP -> {
                 return bishopMoves(board, myPosition);
             }
+            case QUEEN -> {
+                return queenMoves(board, myPosition);
+            }
             default -> throw new RuntimeException("Not implemented");
         }
+    }
+
+    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        moves.addAll(bishopMoves(board, myPosition));
+        moves.addAll(rookMoves(board, myPosition));
+        return moves;
     }
 
     /**
