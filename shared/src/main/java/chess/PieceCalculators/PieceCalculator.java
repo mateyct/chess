@@ -9,7 +9,7 @@ import chess.ChessPosition;
 import java.util.Collection;
 
 public abstract class PieceCalculator {
-    private final TeamColor pieceColor;
+    protected final TeamColor pieceColor;
 
     public PieceCalculator(TeamColor pieceColor) {
         this.pieceColor = pieceColor;

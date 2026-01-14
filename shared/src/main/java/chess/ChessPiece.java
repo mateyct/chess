@@ -2,6 +2,7 @@ package chess;
 
 import chess.PieceCalculators.BishopCalculator;
 import chess.PieceCalculators.PieceCalculator;
+import chess.PieceCalculators.QueenCalculator;
 import chess.PieceCalculators.RookCalculator;
 
 import java.util.ArrayList;
@@ -73,9 +74,7 @@ public class ChessPiece {
             }
             case ROOK -> calculator = new RookCalculator(pieceColor);
             case BISHOP -> calculator = new BishopCalculator(pieceColor);
-            case QUEEN -> {
-                return queenMoves(board, myPosition);
-            }
+            case QUEEN -> calculator = new QueenCalculator(pieceColor);
             case KING -> {
                 return kingMoves(board, myPosition);
             }
@@ -102,48 +101,6 @@ public class ChessPiece {
             }
         }
         return moves;
-    }
-
-    /**
-     * A helper method to handle the possible queen move locations.
-     * @param board The board being played on.
-     * @param myPosition The starting location.
-     * @return A collection of all possible moves.
-     */
-    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = new ArrayList<>();
-        moves.addAll(bishopMoves(board, myPosition));
-        moves.addAll(rookMoves(board, myPosition));
-        return moves;
-    }
-
-    /**
-     * A helper method to determine possible spots for pieces that can move continuously across the board.
-     * @param board The board being played on.
-     * @param myPosition The starting position.
-     * @param moves The collection of ChessMove to add to.
-     * @param up 1, 0, -1, depending on direction of movement.
-     * @param right 1, 0, -1, depending on direction of movement.
-     */
-    private void loopMoveDirection (ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int up, int right) {
-        boolean canContinue = true;
-        ChessPosition currentPositionCheck = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
-        while (canContinue) {
-            canContinue = false;
-            ChessPosition newPosition = new ChessPosition(currentPositionCheck.getRow() + up, currentPositionCheck.getColumn() + right);
-            // check normal move
-            if (checkOpenSpot(board, newPosition, false)) {
-                ChessMove move = new ChessMove(myPosition, newPosition, null);
-                moves.add(move);
-                canContinue = true;
-            }
-            // check capture move
-            else if (checkOpenSpot(board, newPosition, true)) {
-                ChessMove move = new ChessMove(myPosition, newPosition, null);
-                moves.add(move);
-            }
-            currentPositionCheck = newPosition;
-        }
     }
 
     /**
