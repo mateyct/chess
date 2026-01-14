@@ -1,5 +1,6 @@
 package chess;
 
+import chess.PieceCalculators.BishopCalculator;
 import chess.PieceCalculators.PieceCalculator;
 import chess.PieceCalculators.RookCalculator;
 
@@ -71,9 +72,7 @@ public class ChessPiece {
                 return knightMoves(board, myPosition);
             }
             case ROOK -> calculator = new RookCalculator(pieceColor);
-            case BISHOP -> {
-                return bishopMoves(board, myPosition);
-            }
+            case BISHOP -> calculator = new BishopCalculator(pieceColor);
             case QUEEN -> {
                 return queenMoves(board, myPosition);
             }
@@ -115,25 +114,6 @@ public class ChessPiece {
         Collection<ChessMove> moves = new ArrayList<>();
         moves.addAll(bishopMoves(board, myPosition));
         moves.addAll(rookMoves(board, myPosition));
-        return moves;
-    }
-
-    /**
-     * A helper method to handle the possible bishop move locations.
-     * @param board The board being played on.
-     * @param myPosition The starting location.
-     * @return A collection of all possible moves.
-     */
-    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = new ArrayList<>();
-        // go up-left
-        loopMoveDirection(board, myPosition, moves, 1, -1);
-        // go up-right
-        loopMoveDirection(board, myPosition, moves, 1, 1);
-        // go down-left
-        loopMoveDirection(board, myPosition, moves, -1, -1);
-        // go down-right
-        loopMoveDirection(board, myPosition, moves, -1, 1);
         return moves;
     }
 

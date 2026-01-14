@@ -15,6 +15,12 @@ public abstract class PieceCalculator {
         this.pieceColor = pieceColor;
     }
 
+    /**
+     * A method that will calculate the possible moves for a type of piece given a board and a starting position.
+     * @param board The board being played on.
+     * @param myPosition The starting position.
+     * @return A collection of possible moves.
+     */
     public abstract Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition);
 
     /**
