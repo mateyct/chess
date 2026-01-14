@@ -15,6 +15,8 @@ public abstract class PieceCalculator {
         this.pieceColor = pieceColor;
     }
 
+    public abstract Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition);
+
     /**
      * A helper method to check if this piece can legally move to a spot.
      * @param board The board being played on.
@@ -43,7 +45,7 @@ public abstract class PieceCalculator {
      * @param up 1, 0, -1, depending on direction of movement.
      * @param right 1, 0, -1, depending on direction of movement.
      */
-    private void loopMoveDirection (ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int up, int right) {
+    protected void loopMoveDirection (ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int up, int right) {
         boolean canContinue = true;
         ChessPosition currentPositionCheck = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
         while (canContinue) {

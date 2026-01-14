@@ -1,5 +1,8 @@
 package chess;
 
+import chess.PieceCalculators.PieceCalculator;
+import chess.PieceCalculators.RookCalculator;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -59,6 +62,7 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        PieceCalculator calculator;
         switch (pieceType) {
             case PAWN -> {
                 return pawnMoves(board, myPosition);
@@ -66,9 +70,7 @@ public class ChessPiece {
             case KNIGHT -> {
                 return knightMoves(board, myPosition);
             }
-            case ROOK -> {
-                return rookMoves(board, myPosition);
-            }
+            case ROOK -> calculator = new RookCalculator(pieceColor);
             case BISHOP -> {
                 return bishopMoves(board, myPosition);
             }
@@ -78,8 +80,9 @@ public class ChessPiece {
             case KING -> {
                 return kingMoves(board, myPosition);
             }
-            default -> throw new RuntimeException("Invalid piece type.");
+            case null -> throw new RuntimeException("Invalid piece type.");
         }
+        return calculator.calculateMoves(board, myPosition);
     }
 
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
@@ -131,25 +134,6 @@ public class ChessPiece {
         loopMoveDirection(board, myPosition, moves, -1, -1);
         // go down-right
         loopMoveDirection(board, myPosition, moves, -1, 1);
-        return moves;
-    }
-
-    /**
-     * A helper method to handle the possible rook move locations.
-     * @param board The board being played on.
-     * @param myPosition The starting location.
-     * @return A collection of all possible moves.
-     */
-    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = new ArrayList<>();
-        // go up
-        loopMoveDirection(board, myPosition, moves, 1, 0);
-        // go left
-        loopMoveDirection(board, myPosition, moves, 0, -1);
-        // go right
-        loopMoveDirection(board, myPosition, moves, 0, 1);
-        // go down
-        loopMoveDirection(board, myPosition, moves, -1, 0);
         return moves;
     }
 
