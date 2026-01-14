@@ -30,7 +30,7 @@ public abstract class PieceCalculator {
      * @param forCapture Whether this move is a capture move.
      * @return Whether the piece can move here.
      */
-    private boolean checkOpenSpot(ChessBoard board, ChessPosition position, boolean forCapture) {
+    protected boolean checkOpenSpot(ChessBoard board, ChessPosition position, boolean forCapture) {
         int row = position.getRow();
         int col = position.getColumn();
         if (row < 1 || row > 8 || col < 1 || col > 8) {
