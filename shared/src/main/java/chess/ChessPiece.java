@@ -70,32 +70,10 @@ public class ChessPiece {
             case ROOK -> calculator = new RookCalculator(pieceColor);
             case BISHOP -> calculator = new BishopCalculator(pieceColor);
             case QUEEN -> calculator = new QueenCalculator(pieceColor);
-            case KING -> {
-                return kingMoves(board, myPosition);
-            }
+            case KING -> calculator = new KingCalculator(pieceColor);
             case null -> throw new RuntimeException("Invalid piece type.");
         }
         return calculator.calculateMoves(board, myPosition);
-    }
-
-    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = new ArrayList<>();
-        ChessPosition[] possiblePositions = {
-            new ChessPosition(myPosition.getRow(), myPosition.getColumn() - 1),
-            new ChessPosition(myPosition.getRow(), myPosition.getColumn() + 1),
-            new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn()),
-            new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()),
-            new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1),
-            new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1),
-            new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1),
-            new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1),
-        };
-        for (ChessPosition position : possiblePositions) {
-            if (checkOpenSpot(board, position, false) || checkOpenSpot(board, position, true)) {
-                moves.add(new ChessMove(myPosition, position, null));
-            }
-        }
-        return moves;
     }
 
     /**
