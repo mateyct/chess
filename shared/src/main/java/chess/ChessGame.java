@@ -1,6 +1,5 @@
 package chess;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -13,9 +12,6 @@ public class ChessGame {
 
     private ChessBoard board;
     private TeamColor currentTeam;
-
-    private ChessPosition blackKingPosition;
-    private ChessPosition whiteKingPosition;
 
     public ChessGame() {
 
@@ -53,15 +49,16 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        ChessPiece piece = board.getPiece(startPosition);
-        if (piece == null) {
-            return null;
-        }
-        Collection<ChessMove> uncheckedMoves = piece.pieceMoves(board, startPosition);
-        Collection<ChessMove> checkedMoves = new ArrayList<>();
-        for (ChessMove move : uncheckedMoves) {
-
-        }
+//        ChessPiece piece = board.getPiece(startPosition);
+//        if (piece == null) {
+//            return null;
+//        }
+//        Collection<ChessMove> uncheckedMoves = piece.pieceMoves(board, startPosition);
+//        Collection<ChessMove> checkedMoves = new ArrayList<>();
+//        for (ChessMove move : uncheckedMoves) {
+//
+//        }
+        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -81,7 +78,8 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition kingPosition = board.getKingPosition(teamColor);
+        return positionInCheck(teamColor, kingPosition);
     }
 
     /**
@@ -93,10 +91,115 @@ public class ChessGame {
      */
     private boolean positionInCheck(TeamColor teamColor, ChessPosition position) {
         // check cardinals for rook or queen
+        boolean inCheck = testLoopDirection(teamColor, position, 1, 0, new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK});
+        inCheck = inCheck || testLoopDirection(teamColor, position, -1, 0, new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK});
+        inCheck = inCheck || testLoopDirection(teamColor, position, 0, 1, new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK});
+        inCheck = inCheck || testLoopDirection(teamColor, position, 0, -1, new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK});
         // check diagonals for bishop or queen
+        inCheck = inCheck || testLoopDirection(teamColor, position, 1, 1, new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP});
+        inCheck = inCheck || testLoopDirection(teamColor, position, -1, 1, new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP});
+        inCheck = inCheck || testLoopDirection(teamColor, position, 1, -1, new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP});
+        inCheck = inCheck || testLoopDirection(teamColor, position, -1, -1, new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP});
         // check corners for knight
+        int row = position.getRow();
+        int col = position.getColumn();
+        ChessPosition[] knightSpots = {
+                new ChessPosition(row + 1, col + 2),
+                new ChessPosition(row + 1, col - 2),
+                new ChessPosition(row - 1, col + 2),
+                new ChessPosition(row - 1, col - 2),
+                new ChessPosition(row + 2, col + 1),
+                new ChessPosition(row + 2, col - 1),
+                new ChessPosition(row - 2, col + 1),
+                new ChessPosition(row - 2, col - 1),
+        };
+        for (ChessPosition checkPos : knightSpots) {
+            if (checkPos.getRow() >= 1 && checkPos.getRow() <= 8 && checkPos.getColumn() >= 1 && checkPos.getColumn() <= 8) {
+                ChessPiece pieceAt = board.getPiece(checkPos);
+                if (pieceAt != null && pieceAt.getTeamColor() != teamColor && pieceAt.getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                    return true;
+                }
+            }
+        }
         // check square for king
+        ChessPosition[] kingSpots = {
+                new ChessPosition(row + 1, col),
+                new ChessPosition(row + 1, col + 1),
+                new ChessPosition(row + 1, col  - 1),
+                new ChessPosition(row, col + 1),
+                new ChessPosition(row, col - 1),
+                new ChessPosition(row - 1, col),
+                new ChessPosition(row - 1, col + 1),
+                new ChessPosition(row - 1, col - 1),
+        };
+        for (ChessPosition checkPos : kingSpots) {
+            if (checkPos.getRow() >= 1 && checkPos.getRow() <= 8 && checkPos.getColumn() >= 1 && checkPos.getColumn() <= 8) {
+                ChessPiece pieceAt = board.getPiece(checkPos);
+                if (pieceAt != null && pieceAt.getTeamColor() != teamColor && pieceAt.getPieceType() == ChessPiece.PieceType.KING) {
+                    return true;
+                }
+            }
+        }
         // check one direction corners for pawn
+        int checkDirection = teamColor == TeamColor.WHITE ? 1 : -1;
+        ChessPosition[] pawnSpots = {
+                new ChessPosition(row + checkDirection, col + 1),
+                new ChessPosition(row + checkDirection, col - 1),
+        };
+        for (ChessPosition checkPos : pawnSpots) {
+            if (checkPos.getRow() >= 1 && checkPos.getRow() <= 8 && checkPos.getColumn() >= 1 && checkPos.getColumn() <= 8) {
+                ChessPiece pieceAt = board.getPiece(checkPos);
+                if (pieceAt != null && pieceAt.getTeamColor() != teamColor && pieceAt.getPieceType() == ChessPiece.PieceType.PAWN) {
+                    return true;
+                }
+            }
+        }
+        return inCheck;
+    }
+
+    /**
+     * A helper method that checks a specific direction in a loop for specific pieces that put a King in check.
+     * @param teamColor The color of king that is being tested.
+     * @param startPosition The position of the king being tested.
+     * @param up Amount to move up
+     * @param right Amount to move right
+     * @param testPieces A list of pieces to search for.
+     * @return If there is a piece that endangers the king at position.
+     */
+    private boolean testLoopDirection(TeamColor teamColor, ChessPosition startPosition, int up, int right, ChessPiece.PieceType[] testPieces) {
+        boolean continueLoopCheck = true;
+        ChessPosition currentPosition = new ChessPosition(startPosition.getRow(), startPosition.getColumn());
+        while (continueLoopCheck) {
+            if (currentPosition.getRow() <= 1 || currentPosition.getRow() >= 8 ||
+                    currentPosition.getColumn() <= 1 || currentPosition.getColumn() >= 8) {
+                break;
+            }
+            continueLoopCheck = false;
+            currentPosition = new ChessPosition(currentPosition.getRow() + up, currentPosition.getColumn() + right);
+            ChessPiece piece = board.getPiece(currentPosition);
+            if (piece == null) {
+                continueLoopCheck = true;
+            }
+            else if (piece.getTeamColor() != teamColor && checkPieceType(piece, testPieces)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Helper method to determine if the given piece is one of the types in the provided list of types.
+     * @param piece The piece being checked.
+     * @param testPieces The list of piece types to check for.
+     * @return True if the piece's type is in the provided list.
+     */
+    private boolean checkPieceType(ChessPiece piece, ChessPiece.PieceType[] testPieces) {
+        for (ChessPiece.PieceType type : testPieces) {
+            if (piece.getPieceType() == type) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

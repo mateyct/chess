@@ -89,6 +89,23 @@ public class ChessBoard {
         }
     }
 
+    /**
+     * Get the king of a specific team color
+     * @param color The color of king to find.
+     * @return The king for the specified color.
+     */
+    public ChessPosition getKingPosition(ChessGame.TeamColor color) {
+        for (int i = 0; i < boardGrid.length; i++) {
+            for (int j = 0; j < boardGrid[i].length; j++) {
+                ChessPiece piece = boardGrid[i][j];
+                if (piece != null && piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == color) {
+                    return new ChessPosition(i + 1, j + 1);
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(boardGrid);
