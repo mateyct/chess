@@ -62,32 +62,20 @@ public class ChessBoard {
      */
     public void resetBoard() {
         ChessPiece[][] board = new ChessPiece[8][8];
-        addWhite(board);
-        addBlack(board);
+        addPieces(board);
         boardGrid = board;
     }
 
     /**
-     * Adds white pieces on the board arranged for a new game.
+     * Adds all pieces on the board arranged for a new game.
      * @param board the board to use.
      */
-    private void addWhite(ChessPiece[][] board) {
-        ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
+    private void addPieces(ChessPiece[][] board) {
         for (int i = 0; i < board[0].length; i++) {
-            board[0][i] = new ChessPiece(color, STARTING_PIECE_ORDER[i]);
-            board[1][i] = new ChessPiece(color, ChessPiece.PieceType.PAWN);
-        }
-    }
-
-    /**
-     * Adds black pieces on the board arranged for a new game.
-     * @param board the board to use.
-     */
-    private void addBlack(ChessPiece[][] board) {
-        ChessGame.TeamColor color = ChessGame.TeamColor.BLACK;
-        for (int i = 0; i < board[0].length; i++) {
-            board[7][i] = new ChessPiece(color, STARTING_PIECE_ORDER[i]);
-            board[6][i] = new ChessPiece(color, ChessPiece.PieceType.PAWN);
+            board[0][i] = new ChessPiece(ChessGame.TeamColor.WHITE, STARTING_PIECE_ORDER[i]);
+            board[1][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+            board[6][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+            board[7][i] = new ChessPiece(ChessGame.TeamColor.BLACK, STARTING_PIECE_ORDER[i]);
         }
     }
 
