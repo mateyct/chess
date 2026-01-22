@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -14,7 +15,9 @@ public class ChessGame {
     private TeamColor currentTeam;
 
     public ChessGame() {
-
+        board = new ChessBoard();
+        board.resetBoard();
+        currentTeam = TeamColor.WHITE;
     }
 
     /**
@@ -49,16 +52,23 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-//        ChessPiece piece = board.getPiece(startPosition);
-//        if (piece == null) {
-//            return null;
-//        }
-//        Collection<ChessMove> uncheckedMoves = piece.pieceMoves(board, startPosition);
-//        Collection<ChessMove> checkedMoves = new ArrayList<>();
-//        for (ChessMove move : uncheckedMoves) {
-//
-//        }
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = board.getPiece(startPosition);
+        if (piece == null) {
+            return null;
+        }
+        Collection<ChessMove> uncheckedMoves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> checkedMoves = new ArrayList<>();
+        for (ChessMove move : uncheckedMoves) {
+            ChessPiece atEnd = board.getPiece(move.getEndPosition());
+            board.addPiece(move.getStartPosition(), null);
+            board.addPiece(move.getEndPosition(), piece);
+            if (!isInCheck(piece.getTeamColor())) {
+                checkedMoves.add(move);
+            }
+            board.addPiece(move.getStartPosition(), piece);
+            board.addPiece(move.getEndPosition(), atEnd);
+        }
+        return checkedMoves;
     }
 
     /**
@@ -170,12 +180,12 @@ public class ChessGame {
         boolean continueLoopCheck = true;
         ChessPosition currentPosition = new ChessPosition(startPosition.getRow(), startPosition.getColumn());
         while (continueLoopCheck) {
-            if (currentPosition.getRow() <= 1 || currentPosition.getRow() >= 8 ||
-                    currentPosition.getColumn() <= 1 || currentPosition.getColumn() >= 8) {
+            currentPosition = new ChessPosition(currentPosition.getRow() + up, currentPosition.getColumn() + right);
+            if (currentPosition.getRow() < 1 || currentPosition.getRow() > 8 ||
+                    currentPosition.getColumn() < 1 || currentPosition.getColumn() > 8) {
                 break;
             }
             continueLoopCheck = false;
-            currentPosition = new ChessPosition(currentPosition.getRow() + up, currentPosition.getColumn() + right);
             ChessPiece piece = board.getPiece(currentPosition);
             if (piece == null) {
                 continueLoopCheck = true;
