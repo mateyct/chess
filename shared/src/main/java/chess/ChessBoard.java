@@ -144,4 +144,21 @@ public class ChessBoard {
         }
         return repr.toString();
     }
+
+    @Override
+    protected Object clone() {
+        ChessBoard newBoard = new ChessBoard();
+        for (int i = 0; i < boardGrid.length; i++) {
+            for (int j = 0; j < boardGrid[i].length; j++) {
+                ChessPiece atPosition = boardGrid[i][j];
+                if (atPosition == null) {
+                    newBoard.boardGrid[i][j] = null;
+                }
+                else {
+                    newBoard.boardGrid[i][j = (ChessPiece)atPosition.clone()];
+                }
+            }
+        }
+        return newBoard;
+    }
 }
