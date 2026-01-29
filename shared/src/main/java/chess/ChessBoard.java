@@ -10,7 +10,7 @@ import java.util.Collection;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard {
+public class ChessBoard implements Cloneable {
 
     /**
      * The starting order of pieces in a game of chess, discounting pawns.
