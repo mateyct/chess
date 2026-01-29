@@ -12,10 +12,10 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessPiece {
+public class ChessPiece implements Cloneable {
 
     private final ChessGame.TeamColor pieceColor;
-    private PieceType pieceType;
+    private final PieceType pieceType;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
@@ -82,5 +82,10 @@ public class ChessPiece {
             return false;
         }
         return pieceType == compareTo.pieceType && pieceColor == compareTo.pieceColor;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return (ChessPiece) super.clone();
     }
 }
