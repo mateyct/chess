@@ -1,4 +1,4 @@
-package chess.PieceCalculators;
+package chess.piececalculators;
 
 import chess.*;
 
@@ -56,7 +56,12 @@ public class PawnCalculator extends PieceCalculator {
      * @param endPosition The ending position of the move.
      */
     private void addPawnMove(Collection<ChessMove> moves, ChessPosition startPosition, ChessPosition endPosition) {
-        if (endPosition.getRow() == 8 && pieceColor == ChessGame.TeamColor.WHITE || endPosition.getRow() == 1 && pieceColor == ChessGame.TeamColor.BLACK) {
+        if (
+                endPosition.getRow() == 8 &&
+                pieceColor == ChessGame.TeamColor.WHITE ||
+                endPosition.getRow() == 1 &&
+                pieceColor == ChessGame.TeamColor.BLACK
+        ) {
             for (ChessPiece.PieceType pType : PROMOTION_TYPES) {
                 moves.add(new ChessMove(startPosition, endPosition, pType));
             }

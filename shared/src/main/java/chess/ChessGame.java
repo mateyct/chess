@@ -137,10 +137,34 @@ public class ChessGame {
      * @return True if the king is in check by a rook or queen.
      */
     private boolean checkByHorizontal(TeamColor teamColor, ChessPosition position) {
-        boolean inCheck = testLoopDirection(teamColor, position, 1, 0, new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK});
-        inCheck = inCheck || testLoopDirection(teamColor, position, -1, 0, new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK});
-        inCheck = inCheck || testLoopDirection(teamColor, position, 0, 1, new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK});
-        inCheck = inCheck || testLoopDirection(teamColor, position, 0, -1, new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK});
+        boolean inCheck = testLoopDirection(
+                teamColor,
+                position,
+                1,
+                0,
+                new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK}
+        );
+        inCheck = inCheck || testLoopDirection(
+                teamColor,
+                position,
+                -1,
+                0,
+                new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK}
+        );
+        inCheck = inCheck || testLoopDirection(
+                teamColor,
+                position,
+                0,
+                1,
+                new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK}
+        );
+        inCheck = inCheck || testLoopDirection(
+                teamColor,
+                position,
+                0,
+                -1,
+                new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK}
+        );
         return inCheck;
     }
 
@@ -151,10 +175,34 @@ public class ChessGame {
      * @return True if the king is in check by a bishop or queen.
      */
     private boolean checkByDiagonal(TeamColor teamColor, ChessPosition position) {
-        boolean inCheck = testLoopDirection(teamColor, position, 1, 1, new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP});
-        inCheck = inCheck || testLoopDirection(teamColor, position, -1, 1, new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP});
-        inCheck = inCheck || testLoopDirection(teamColor, position, 1, -1, new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP});
-        inCheck = inCheck || testLoopDirection(teamColor, position, -1, -1, new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP});
+        boolean inCheck = testLoopDirection(
+                teamColor,
+                position,
+                1,
+                1,
+                new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP}
+        );
+        inCheck = inCheck || testLoopDirection(
+                teamColor,
+                position,
+                -1,
+                1,
+                new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP}
+        );
+        inCheck = inCheck || testLoopDirection(
+                teamColor,
+                position,
+                1,
+                -1,
+                new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP}
+        );
+        inCheck = inCheck || testLoopDirection(
+                teamColor,
+                position,
+                -1,
+                -1,
+                new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP}
+        );
         return inCheck;
     }
 
