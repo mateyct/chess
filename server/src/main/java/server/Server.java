@@ -1,5 +1,6 @@
 package server;
 
+import exception.AlreadyTakenException;
 import io.javalin.*;
 
 public class Server {
@@ -8,9 +9,11 @@ public class Server {
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
+        Handlers handlers = new Handlers();
 
-        // Register your endpoints and exception handlers here.
+        javalin.post("/user", handlers::registerHandler);
 
+        javalin.exception(AlreadyTakenException.class, handlers::exceptionHandler);
     }
 
     public int run(int desiredPort) {
