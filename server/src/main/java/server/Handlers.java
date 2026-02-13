@@ -4,9 +4,11 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import exception.ResponseException;
 import io.javalin.http.Context;
+import request.ClearResult;
 import request.RegisterRequest;
 import request.RegisterResult;
 import request.Result;
+import service.ClearService;
 import service.UserService;
 
 import java.lang.reflect.Type;
@@ -16,18 +18,26 @@ public class Handlers {
     private final UserDAO userDAO;
     private final GameDAO gameDAO;
     private final UserService userService;
+    private final ClearService clearService;
 
     public Handlers() {
         authDAO = new MemoryAuthDAO();
         userDAO = new MemoryUserDAO();
         gameDAO = new MemoryGameDAO();
         userService = new UserService(authDAO, userDAO);
+        clearService = new ClearService(authDAO, userDAO, gameDAO);
     }
 
     public void registerHandler(Context ctx) throws ResponseException {
         RegisterRequest request = deserialize(ctx.body(), RegisterRequest.class);
         RegisterResult result = userService.register(request);
         ctx.json(serialize(result));
+    }
+
+    public void clearHandler(Context ctx) {
+        ClearResult result = clearService.clear();
+        String json = serialize(result);
+        ctx.json(json);
     }
 
     private <T> T deserialize(String json, Type type) {

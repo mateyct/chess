@@ -12,6 +12,7 @@ public class Server {
         Handlers handlers = new Handlers();
 
         javalin.post("/user", handlers::registerHandler);
+        javalin.delete("/db", handlers::clearHandler);
 
         javalin.exception(ResponseException.class, handlers::responseExceptionHandler);
         javalin.exception(Exception.class, handlers::generalExceptionHandler);
