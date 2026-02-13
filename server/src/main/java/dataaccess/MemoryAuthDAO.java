@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class MemoryAuthDAO implements AuthDAO {
-    private Collection<AuthData> authCollection;
+    private final Collection<AuthData> authCollection;
 
     public MemoryAuthDAO() {
         authCollection = new ArrayList<>();
@@ -30,5 +30,10 @@ public class MemoryAuthDAO implements AuthDAO {
     @Override
     public void removeAuth(String authToken) {
         authCollection.removeIf(data -> data.authToken().equals(authToken));
+    }
+
+    @Override
+    public void addAuth(AuthData authData) {
+        authCollection.add(authData);
     }
 }

@@ -8,4 +8,6 @@ public interface AuthDAO {
     public AuthData getAuth(String authToken);
 
     public void removeAuth(String authToken);
+
+    public void addAuth(AuthData authData);
 }
