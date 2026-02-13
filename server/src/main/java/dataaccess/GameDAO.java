@@ -9,7 +9,7 @@ public interface GameDAO {
 
     public void createGame(GameData gameData);
 
-    public GameData getGame(String id);
+    public GameData getGame(int id);
 
     public Collection<GameData> getGames();
 }
