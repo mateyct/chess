@@ -1,6 +1,6 @@
 package server;
 
-import exception.AlreadyTakenException;
+import exception.ResponseException;
 import io.javalin.*;
 
 public class Server {
@@ -13,7 +13,8 @@ public class Server {
 
         javalin.post("/user", handlers::registerHandler);
 
-        javalin.exception(AlreadyTakenException.class, handlers::exceptionHandler);
+        javalin.exception(ResponseException.class, handlers::responseExceptionHandler);
+        javalin.exception(Exception.class, handlers::generalExceptionHandler);
     }
 
     public int run(int desiredPort) {

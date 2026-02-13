@@ -2,7 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.*;
-import exception.AlreadyTakenException;
+import exception.ResponseException;
 import io.javalin.http.Context;
 import request.RegisterRequest;
 import request.RegisterResult;
@@ -24,7 +24,7 @@ public class Handlers {
         userService = new UserService(authDAO, userDAO);
     }
 
-    public void registerHandler(Context ctx) {
+    public void registerHandler(Context ctx) throws ResponseException {
         RegisterRequest request = deserialize(ctx.body(), RegisterRequest.class);
         RegisterResult result = userService.register(request);
         ctx.json(serialize(result));
@@ -40,10 +40,17 @@ public class Handlers {
         return gson.toJson(result);
     }
 
-    public void exceptionHandler(AlreadyTakenException e, Context ctx) {
+    public void responseExceptionHandler(ResponseException e, Context ctx) {
         Result result = new Result("Error: " + e.getMessage());
         String json = serialize(result);
         ctx.status(e.getStatusCode());
+        ctx.json(json);
+    }
+
+    public void generalExceptionHandler(Exception e, Context ctx) {
+        Result result = new Result("Error: " + e.getMessage());
+        String json = serialize(result);
+        ctx.status(500);
         ctx.json(json);
     }
 
