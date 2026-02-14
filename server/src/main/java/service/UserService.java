@@ -3,6 +3,8 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.UserDAO;
 import exception.AlreadyTakenException;
+import exception.BadRequestException;
+import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
 import request.RegisterRequest;
@@ -19,7 +21,14 @@ public class UserService {
         this.userDAO = userDAO;
     }
 
-    public RegisterResult register(RegisterRequest request) throws AlreadyTakenException {
+    private boolean checkInvalidString(String val) {
+        return val == null || val.isEmpty();
+    }
+
+    public RegisterResult register(RegisterRequest request) throws ResponseException {
+        if (checkInvalidString(request.username()) || checkInvalidString(request.password()) || checkInvalidString(request.email())) {
+            throw new BadRequestException("Incorrect fields, requires: username, password, and email");
+        }
         UserData existingUser = userDAO.getUser(request.username());
         if (existingUser != null) {
             throw new AlreadyTakenException("Username " + request.username() + " is already taken.");
