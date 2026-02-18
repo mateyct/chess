@@ -2,10 +2,13 @@ package service;
 
 import dataaccess.*;
 import exception.AlreadyTakenException;
+import exception.InvalidCredentialsException;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import request.LoginRequest;
+import request.LoginResult;
 import request.RegisterRequest;
 import request.RegisterResult;
 
@@ -25,7 +28,7 @@ class UserServiceTest {
         service = new UserService(authDAO, userDAO);
     }
 
-    // positive test
+    // positive test register
     @Test
     void testRegisterUser() {
         // assert correct starting state
@@ -42,7 +45,7 @@ class UserServiceTest {
         assertEquals(userData, userDAO.getUser(user));
     }
 
-    // negative test
+    // negative test register
     @Test
     void testFailRegisterDuplicate() {
         // setup starting state
@@ -52,6 +55,35 @@ class UserServiceTest {
         // run function
         assertThrows(AlreadyTakenException.class, () -> {
             service.register(new RegisterRequest(user, user, "user@email.com"));
+        });
+    }
+
+    // positive test login
+    @Test
+    void testLoginUser() {
+        // set up starting state
+        String user = "user";
+        UserData userData = new UserData(user, user, "user@email.com");
+        userDAO.createUser(userData);
+        // run function
+        assertDoesNotThrow(() -> {
+            LoginResult result = service.login(new LoginRequest(user, user));
+            AuthData authData = authDAO.getAuth(result.getAuthToken());
+            assertEquals(user, authData.username());
+        });
+        assertEquals(userData, userDAO.getUser(user));
+    }
+
+    @Test
+    void testInvalidLoginUser() {
+        // set up starting state
+        String user = "user";
+        String fakeUser = "user-fake";
+        UserData userData = new UserData(user, user, "user@email.com");
+        userDAO.createUser(userData);
+        // run function
+        assertThrows(InvalidCredentialsException.class, () -> {
+            service.login(new LoginRequest(fakeUser, user));
         });
     }
 }
