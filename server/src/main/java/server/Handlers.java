@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import exception.ResponseException;
 import io.javalin.http.Context;
-import request.ClearResult;
-import request.RegisterRequest;
-import request.RegisterResult;
-import request.Result;
+import request.*;
 import service.ClearService;
 import service.UserService;
 
@@ -31,6 +28,12 @@ public class Handlers {
     public void registerHandler(Context ctx) throws ResponseException {
         RegisterRequest request = deserialize(ctx.body(), RegisterRequest.class);
         RegisterResult result = userService.register(request);
+        ctx.json(serialize(result));
+    }
+
+    public void loginHandler(Context ctx) throws ResponseException {
+        LoginRequest request = deserialize(ctx.body(), LoginRequest.class);
+        LoginResult result = userService.login(request);
         ctx.json(serialize(result));
     }
 

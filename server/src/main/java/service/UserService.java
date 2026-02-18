@@ -4,6 +4,7 @@ import dataaccess.AuthDAO;
 import dataaccess.UserDAO;
 import exception.AlreadyTakenException;
 import exception.BadRequestException;
+import exception.InvalidCredentialsException;
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
@@ -41,8 +42,16 @@ public class UserService {
         return new RegisterResult(auth.username(), auth.authToken());
     }
 
-    private LoginResult login(LoginRequest request) {
-
+    public LoginResult login(LoginRequest request) throws ResponseException {
+        if (checkInvalidString(request.username()) || checkInvalidString(request.password())) {
+            throw new BadRequestException("Incorrect fields, requires: username and password");
+        }
+        UserData user = userDAO.getUser(request.username());
+        if (user == null || !user.password().equals(request.password())) {
+            throw new InvalidCredentialsException("Invalid username or password.");
+        }
+        AuthData auth = newAuth(user.username());
+        return new LoginResult(auth.username(), auth.authToken());
     }
 
     private AuthData newAuth(String username) {
