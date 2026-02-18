@@ -7,6 +7,8 @@ import exception.BadRequestException;
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
+import request.LoginRequest;
+import request.LoginResult;
 import request.RegisterRequest;
 import request.RegisterResult;
 
@@ -37,6 +39,10 @@ public class UserService {
         userDAO.createUser(newUser);
         AuthData auth = newAuth(request.username());
         return new RegisterResult(auth.username(), auth.authToken());
+    }
+
+    private LoginResult login(LoginRequest request) {
+
     }
 
     private AuthData newAuth(String username) {
