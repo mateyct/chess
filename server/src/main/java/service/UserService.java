@@ -8,10 +8,7 @@ import exception.InvalidCredentialsException;
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
-import request.LoginRequest;
-import request.LoginResult;
-import request.RegisterRequest;
-import request.RegisterResult;
+import request.*;
 
 import java.util.UUID;
 
@@ -52,6 +49,11 @@ public class UserService {
         }
         AuthData auth = newAuth(user.username());
         return new LoginResult(auth.username(), auth.authToken());
+    }
+
+    public LogoutResult logout(LogoutRequest request) {
+        authDAO.removeAuth(request.authToken());
+        return new LogoutResult();
     }
 
     public void authorize(String authToken) throws ResponseException {

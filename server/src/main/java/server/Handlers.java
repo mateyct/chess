@@ -37,10 +37,14 @@ public class Handlers {
         ctx.json(serialize(result));
     }
 
-//    public void logoutHandler(Context ctx)
+    public void logoutHandler(Context ctx) {
+        LogoutRequest request = new LogoutRequest(ctx.header("Authorization"));
+        LogoutResult result = userService.logout(request);
+        ctx.json(serialize(result));
+    }
 
     public void authorizeHandler(Context ctx) throws ResponseException {
-        userService.authorize(ctx.header("authToken"));
+        userService.authorize(ctx.header("Authorization"));
     }
 
     public void clearHandler(Context ctx) {

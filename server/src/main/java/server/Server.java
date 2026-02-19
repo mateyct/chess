@@ -16,7 +16,7 @@ public class Server {
         // use lambda to separate auth handling
         javalin.delete("/session", ctx -> {
             handlers.authorizeHandler(ctx);
-
+            handlers.logoutHandler(ctx);
         });
         javalin.delete("/db", handlers::clearHandler);
 
