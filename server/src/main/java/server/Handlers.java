@@ -37,7 +37,7 @@ public class Handlers {
         ctx.json(serialize(result));
     }
 
-    public void logoutHandler(Context ctx) {
+    public void logoutHandler(Context ctx) throws ResponseException {
         LogoutRequest request = new LogoutRequest(ctx.header("Authorization"));
         LogoutResult result = userService.logout(request);
         ctx.json(serialize(result));

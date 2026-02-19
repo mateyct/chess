@@ -51,7 +51,10 @@ public class UserService {
         return new LoginResult(auth.username(), auth.authToken());
     }
 
-    public LogoutResult logout(LogoutRequest request) {
+    public LogoutResult logout(LogoutRequest request) throws InvalidCredentialsException {
+        if (request.authToken() == null) {
+            throw new InvalidCredentialsException("Missing authentication token.");
+        }
         authDAO.removeAuth(request.authToken());
         return new LogoutResult();
     }

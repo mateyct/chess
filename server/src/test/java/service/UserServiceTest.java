@@ -7,10 +7,7 @@ import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import request.LoginRequest;
-import request.LoginResult;
-import request.RegisterRequest;
-import request.RegisterResult;
+import request.*;
 
 import java.rmi.AlreadyBoundException;
 
@@ -84,6 +81,26 @@ class UserServiceTest {
         // run function
         assertThrows(InvalidCredentialsException.class, () -> {
             service.login(new LoginRequest(fakeUser, user));
+        });
+    }
+
+    @Test
+    void testLogoutUser() {
+        String authToken = "test-token";
+        AuthData auth = new AuthData(authToken, "user");
+        authDAO.addAuth(auth);
+        assertNotNull(authDAO.getAuth(authToken));
+        assertDoesNotThrow(() -> {
+            service.logout(new LogoutRequest(authToken));
+        });
+        assertNull(authDAO.getAuth(authToken));
+    }
+
+    @Test
+    void testInvalidLogoutUser() {
+        String authToken = "test-token";
+        assertThrows(InvalidCredentialsException.class, () -> {
+            service.logout(new LogoutRequest(null));
         });
     }
 }
