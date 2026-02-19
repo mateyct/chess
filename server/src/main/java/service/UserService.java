@@ -54,6 +54,16 @@ public class UserService {
         return new LoginResult(auth.username(), auth.authToken());
     }
 
+    public void authorize(String authToken) throws ResponseException {
+        if (authToken == null) {
+            throw new InvalidCredentialsException("Missing authentication token.");
+        }
+        AuthData authData = authDAO.getAuth(authToken);
+        if (authData == null) {
+            throw new InvalidCredentialsException("Invalid authentication token.");
+        }
+    }
+
     private AuthData newAuth(String username) {
         AuthData auth = new AuthData(UUID.randomUUID().toString(), username);
         authDAO.addAuth(auth);

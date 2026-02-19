@@ -13,6 +13,11 @@ public class Server {
 
         javalin.post("/user", handlers::registerHandler);
         javalin.post("/session", handlers::loginHandler);
+        // use lambda to separate auth handling
+        javalin.delete("/session", ctx -> {
+            handlers.authorizeHandler(ctx);
+
+        });
         javalin.delete("/db", handlers::clearHandler);
 
         javalin.exception(ResponseException.class, handlers::responseExceptionHandler);

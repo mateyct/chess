@@ -37,6 +37,12 @@ public class Handlers {
         ctx.json(serialize(result));
     }
 
+//    public void logoutHandler(Context ctx)
+
+    public void authorizeHandler(Context ctx) throws ResponseException {
+        userService.authorize(ctx.header("authToken"));
+    }
+
     public void clearHandler(Context ctx) {
         ClearResult result = clearService.clear();
         String json = serialize(result);
