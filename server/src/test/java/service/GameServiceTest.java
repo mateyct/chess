@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.*;
 import exception.BadGameDataException;
 import model.GameData;
@@ -7,6 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import request.CreateGameRequest;
 import result.CreateGameResult;
+import result.ListGamesResult;
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,5 +49,30 @@ class GameServiceTest {
         assertThrows(BadGameDataException.class, () -> {
             service.createGame(new CreateGameRequest(gameName));
         });
+    }
+
+    @Test
+    void testListGames() {
+        GameData game1 = new GameData(1, "Dave", "Bill", "Cool game", new ChessGame());
+        GameData game2 = new GameData(2, "Max", null, "Coolest game", new ChessGame());
+        gameDAO.createGame(game1);
+        gameDAO.createGame(game2);
+        ListGamesResult result = service.listGames();
+        assertInstanceOf(ArrayList.class, result.getGames());
+        ArrayList<ListGamesResult.GameMetadata> games = (ArrayList<ListGamesResult.GameMetadata>)result.getGames();
+        assertEquals(game1.gameId(), games.getFirst().gameID());
+        assertEquals(game1.whiteUsername(), games.getFirst().whiteUsername());
+        assertEquals(game1.blackUsername(), games.getFirst().blackUsername());
+        assertEquals(game1.gameName(), games.getFirst().gameName());
+        assertEquals(game2.gameId(), games.get(1).gameID());
+        assertEquals(game2.whiteUsername(), games.get(1).whiteUsername());
+        assertEquals(game2.blackUsername(), games.get(1).blackUsername());
+        assertEquals(game2.gameName(), games.get(1).gameName());
+    }
+
+    @Test
+    void testEmptyListGames() {
+        ListGamesResult result = service.listGames();
+        assertEquals(0, result.getGames().size());
     }
 }
