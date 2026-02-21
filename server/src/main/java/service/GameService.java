@@ -11,8 +11,8 @@ import request.CreateGameResult;
 import util.StringUtility;
 
 public class GameService {
-    private AuthDAO authDAO;
-    private GameDAO gameDAO;
+    private final AuthDAO authDAO;
+    private final GameDAO gameDAO;
 
     public GameService(AuthDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
@@ -23,15 +23,14 @@ public class GameService {
         if (StringUtility.checkInvalidString(request.gameName())) {
             throw new BadGameDataException("Missing game name.");
         }
-        int gameIndex = gameDAO.gameCount();
         GameData gameData = new GameData(
-                gameIndex,
+                0,
                 null,
                 null,
                 request.gameName(),
                 new ChessGame()
         );
-        gameDAO.createGame(gameData);
-        return new CreateGameResult(gameIndex);
+        int id = gameDAO.createGame(gameData);
+        return new CreateGameResult(id);
     }
 }
