@@ -7,7 +7,7 @@ import exception.BadGameDataException;
 import exception.ResponseException;
 import model.GameData;
 import request.CreateGameRequest;
-import request.CreateGameResult;
+import result.CreateGameResult;
 import util.StringUtility;
 
 public class GameService {

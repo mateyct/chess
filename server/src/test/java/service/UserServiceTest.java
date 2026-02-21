@@ -8,8 +8,8 @@ import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import request.*;
-
-import java.rmi.AlreadyBoundException;
+import result.LoginResult;
+import result.RegisterResult;
 
 import static org.junit.jupiter.api.Assertions.*;
 

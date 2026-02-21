@@ -9,6 +9,9 @@ import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
 import request.*;
+import result.LoginResult;
+import result.LogoutResult;
+import result.RegisterResult;
 import util.StringUtility;
 
 import java.util.UUID;

@@ -5,6 +5,7 @@ import dataaccess.*;
 import exception.ResponseException;
 import io.javalin.http.Context;
 import request.*;
+import result.*;
 import service.ClearService;
 import service.GameService;
 import service.UserService;

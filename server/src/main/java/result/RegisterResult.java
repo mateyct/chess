@@ -1,9 +1,9 @@
-package request;
+package result;
 
-public class LoginResult extends Result {
+public class RegisterResult extends Result {
     private final String username;
     private final String authToken;
-    public LoginResult(String username, String authToken) {
+    public RegisterResult(String username, String authToken) {
         super(null);
         this.username = username;
         this.authToken = authToken;

@@ -1,4 +1,4 @@
-package request;
+package result;
 
 public class Result {
     private final String message;

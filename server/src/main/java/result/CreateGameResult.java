@@ -1,4 +1,4 @@
-package request;
+package result;
 
 public class CreateGameResult extends Result {
     private final int gameID;
