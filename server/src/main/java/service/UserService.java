@@ -9,6 +9,7 @@ import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
 import request.*;
+import util.StringUtility;
 
 import java.util.UUID;
 
@@ -21,12 +22,11 @@ public class UserService {
         this.userDAO = userDAO;
     }
 
-    private boolean checkInvalidString(String val) {
-        return val == null || val.isEmpty();
-    }
-
     public RegisterResult register(RegisterRequest request) throws ResponseException {
-        if (checkInvalidString(request.username()) || checkInvalidString(request.password()) || checkInvalidString(request.email())) {
+        if (StringUtility.checkInvalidString(request.username()) ||
+                StringUtility.checkInvalidString(request.password()) ||
+                StringUtility.checkInvalidString(request.email())
+        ) {
             throw new BadRequestException("Incorrect fields, requires: username, password, and email");
         }
         UserData existingUser = userDAO.getUser(request.username());
@@ -40,7 +40,9 @@ public class UserService {
     }
 
     public LoginResult login(LoginRequest request) throws ResponseException {
-        if (checkInvalidString(request.username()) || checkInvalidString(request.password())) {
+        if (StringUtility.checkInvalidString(request.username()) ||
+                StringUtility.checkInvalidString(request.password())
+        ) {
             throw new BadRequestException("Incorrect fields, requires: username and password");
         }
         UserData user = userDAO.getUser(request.username());

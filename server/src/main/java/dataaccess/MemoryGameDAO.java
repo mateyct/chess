@@ -72,4 +72,9 @@ public class MemoryGameDAO implements GameDAO {
             ));
         }
     }
+
+    @Override
+    public int gameCount() {
+        return gameCollection.size();
+    }
 }

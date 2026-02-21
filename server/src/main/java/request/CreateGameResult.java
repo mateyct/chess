@@ -1,13 +1,13 @@
 package request;
 
 public class CreateGameResult extends Result {
-    private final String gameId;
-    public CreateGameResult(String gameId) {
+    private final int gameId;
+    public CreateGameResult(int gameId) {
         super(null);
         this.gameId = gameId;
     }
 
-    public String getGameId() {
+    public int getGameId() {
         return gameId;
     }
 }

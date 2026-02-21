@@ -14,4 +14,6 @@ public interface GameDAO {
     public Collection<GameData> getGames();
 
     public void addUserToGame(String username, String playerColor, int gameId) throws DataAccessException;
+
+    public int gameCount();
 }
