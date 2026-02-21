@@ -18,6 +18,10 @@ public class Server {
             handlers.authorizeHandler(ctx);
             handlers.logoutHandler(ctx);
         });
+
+        javalin.before("/game", handlers::authorizeHandler);
+
+        javalin.post("/game", handlers::createGameHandler);
         javalin.delete("/db", handlers::clearHandler);
 
         javalin.exception(ResponseException.class, handlers::responseExceptionHandler);

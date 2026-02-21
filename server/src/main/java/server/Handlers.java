@@ -6,6 +6,7 @@ import exception.ResponseException;
 import io.javalin.http.Context;
 import request.*;
 import service.ClearService;
+import service.GameService;
 import service.UserService;
 
 import java.lang.reflect.Type;
@@ -16,6 +17,7 @@ public class Handlers {
     private final GameDAO gameDAO;
     private final UserService userService;
     private final ClearService clearService;
+    private final GameService gameService;
 
     public Handlers() {
         authDAO = new MemoryAuthDAO();
@@ -23,6 +25,7 @@ public class Handlers {
         gameDAO = new MemoryGameDAO();
         userService = new UserService(authDAO, userDAO);
         clearService = new ClearService(authDAO, userDAO, gameDAO);
+        gameService = new GameService(authDAO, gameDAO);
     }
 
     public void registerHandler(Context ctx) throws ResponseException {
@@ -40,6 +43,12 @@ public class Handlers {
     public void logoutHandler(Context ctx) throws ResponseException {
         LogoutRequest request = new LogoutRequest(ctx.header("Authorization"));
         LogoutResult result = userService.logout(request);
+        ctx.json(serialize(result));
+    }
+
+    public void createGameHandler(Context ctx) throws ResponseException {
+        CreateGameRequest request = deserialize(ctx.body(), CreateGameRequest.class);
+        CreateGameResult result = gameService.createGame(request);
         ctx.json(serialize(result));
     }
 
