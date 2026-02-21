@@ -8,7 +8,10 @@ import exception.ResponseException;
 import model.GameData;
 import request.CreateGameRequest;
 import result.CreateGameResult;
+import result.ListGamesResult;
 import util.StringUtility;
+
+import java.util.Collection;
 
 public class GameService {
     private final AuthDAO authDAO;
@@ -32,5 +35,10 @@ public class GameService {
         );
         int id = gameDAO.createGame(gameData);
         return new CreateGameResult(id);
+    }
+
+    public ListGamesResult listGames() {
+        Collection<GameData> gameList = gameDAO.getGames();
+        return new ListGamesResult(gameList);
     }
 }

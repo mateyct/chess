@@ -20,8 +20,10 @@ public class Server {
         });
 
         javalin.before("/game", handlers::authorizeHandler);
-
         javalin.post("/game", handlers::createGameHandler);
+        javalin.get("/game", handlers::listGamesHandler);
+
+
         javalin.delete("/db", handlers::clearHandler);
 
         javalin.exception(ResponseException.class, handlers::responseExceptionHandler);

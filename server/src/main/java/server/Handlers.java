@@ -53,6 +53,11 @@ public class Handlers {
         ctx.json(serialize(result));
     }
 
+    public void listGamesHandler(Context ctx) {
+        ListGamesResult games = gameService.listGames();
+        ctx.json(serialize(games));
+    }
+
     public void authorizeHandler(Context ctx) throws ResponseException {
         userService.authorize(ctx.header("Authorization"));
     }
