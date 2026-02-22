@@ -58,6 +58,13 @@ public class Handlers {
         ctx.json(serialize(games));
     }
 
+    public void joinGameHandler(Context ctx) throws ResponseException {
+        JoinGameRequest request = deserialize(ctx.body(), JoinGameRequest.class);
+        request = new JoinGameRequest(request.playerColor(), request.gameID(), ctx.attribute("user"));
+        JoinGameResult result = gameService.joinGame(request);
+        ctx.json(serialize(result));
+    }
+
     public void authorizeHandler(Context ctx) throws ResponseException {
         String username = userService.authorize(ctx.header("Authorization"));
         ctx.attribute("user", username);

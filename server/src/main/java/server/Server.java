@@ -22,6 +22,7 @@ public class Server {
         javalin.before("/game", handlers::authorizeHandler);
         javalin.post("/game", handlers::createGameHandler);
         javalin.get("/game", handlers::listGamesHandler);
+        javalin.put("/game", handlers::joinGameHandler);
 
 
         javalin.delete("/db", handlers::clearHandler);
