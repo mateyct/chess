@@ -103,4 +103,21 @@ class UserServiceTest {
             service.logout(new LogoutRequest(null));
         });
     }
+
+    @Test
+    void testAuthorize() {
+        AuthData authData = new AuthData("test-token", "Dave");
+        authDAO.addAuth(authData);
+        assertDoesNotThrow(() -> {
+            String retrievedUser = service.authorize(authData.authToken());
+            assertEquals(authData.username(), retrievedUser);
+        });
+    }
+
+    @Test
+    void testAuthorizeNonexistentAuth() {
+        assertThrows(InvalidCredentialsException.class, () -> {
+            service.authorize("fake-token");
+        });
+    }
 }
