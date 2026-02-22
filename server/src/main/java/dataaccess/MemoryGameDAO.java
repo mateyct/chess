@@ -1,11 +1,9 @@
 package dataaccess;
 
-import chess.ChessGame;
 import model.GameData;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class MemoryGameDAO implements GameDAO {
     private final ArrayList<GameData> gameCollection;
@@ -48,7 +46,7 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void addUserToGame(String username, String playerColor, int gameId) throws DataAccessException {
+    public void updateGame(int gameId, GameData gameData) throws DataAccessException {
         GameData currentGame = null;
         // verify game is still there
         int gameIndex;
@@ -61,24 +59,7 @@ public class MemoryGameDAO implements GameDAO {
         if (currentGame == null) {
             throw new DataAccessException("Game with id " + gameId + "doesn't exist.");
         }
-        if (playerColor.equals(ChessGame.TeamColor.BLACK.name())) {
-            gameCollection.set(gameIndex, new GameData(
-                    gameId,
-                    currentGame.whiteUsername(),
-                    username,
-                    currentGame.gameName(),
-                    currentGame.game()
-            ));
-        }
-        else {
-            gameCollection.set(gameIndex, new GameData(
-                    gameId,
-                    username,
-                    currentGame.blackUsername(),
-                    currentGame.gameName(),
-                    currentGame.game()
-            ));
-        }
+        gameCollection.set(gameIndex, gameData);
     }
 
     @Override
