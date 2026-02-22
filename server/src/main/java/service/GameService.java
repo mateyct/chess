@@ -45,12 +45,12 @@ public class GameService {
     }
 
     public JoinGameResult joinGame(JoinGameRequest request) throws ResponseException {
+        if (StringUtility.checkInvalidString(request.playerColor())) {
+            throw new BadGameDataException("Missing player color.");
+        }
         boolean isBlack = request.playerColor().equals(ChessGame.TeamColor.BLACK.name());
-        if (StringUtility.checkInvalidString(request.playerColor()) ||
-                (!isBlack &&
-                !request.playerColor().equals(ChessGame.TeamColor.WHITE.name()))
-        ) {
-            throw new BadGameDataException("Missing or invalid player color. Must be WHITE or BLACK.");
+        if ((!isBlack && !request.playerColor().equals(ChessGame.TeamColor.WHITE.name()))) {
+            throw new BadGameDataException("Invalid player color. Must be WHITE or BLACK.");
         }
         if (StringUtility.checkInvalidString(request.username())) {
             throw new BadGameDataException("Error with username.");

@@ -7,7 +7,9 @@ import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import result.CreateGameResult;
+import result.JoinGameResult;
 import result.ListGamesResult;
 
 import java.util.ArrayList;
@@ -72,5 +74,29 @@ class GameServiceTest {
     void testEmptyListGames() {
         ListGamesResult result = service.listGames();
         assertEquals(0, result.getGames().size());
+    }
+
+    @Test
+    void testJoinGame() {
+        GameData existingGame = new GameData(1, "Marv", null, "Cool", new ChessGame());
+        gameDAO.createGame(existingGame);
+
+        JoinGameRequest request = new JoinGameRequest("BLACK", 1, "Dave");
+        assertDoesNotThrow(() -> {
+            service.joinGame(request);
+            GameData changedGame = gameDAO.getGame(1);
+            assertEquals(request.username(), changedGame.blackUsername());
+        });
+    }
+
+    @Test
+    void testJoinInvalidSpot() {
+        GameData existingGame = new GameData(1, "Marv", null, "Cool", new ChessGame());
+        gameDAO.createGame(existingGame);
+
+        JoinGameRequest request = new JoinGameRequest(null, 1, "Dave");
+        assertThrows(BadGameDataException.class, () -> {
+            service.joinGame(request);
+        });
     }
 }
