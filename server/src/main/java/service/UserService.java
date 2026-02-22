@@ -64,7 +64,7 @@ public class UserService {
         return new LogoutResult();
     }
 
-    public void authorize(String authToken) throws ResponseException {
+    public String authorize(String authToken) throws ResponseException {
         if (authToken == null) {
             throw new InvalidCredentialsException("Missing authentication token.");
         }
@@ -72,6 +72,7 @@ public class UserService {
         if (authData == null) {
             throw new InvalidCredentialsException("Invalid authentication token.");
         }
+        return authData.username();
     }
 
     private AuthData newAuth(String username) {

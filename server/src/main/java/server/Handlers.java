@@ -26,7 +26,7 @@ public class Handlers {
         gameDAO = new MemoryGameDAO();
         userService = new UserService(authDAO, userDAO);
         clearService = new ClearService(authDAO, userDAO, gameDAO);
-        gameService = new GameService(authDAO, gameDAO);
+        gameService = new GameService(gameDAO);
     }
 
     public void registerHandler(Context ctx) throws ResponseException {
@@ -59,7 +59,8 @@ public class Handlers {
     }
 
     public void authorizeHandler(Context ctx) throws ResponseException {
-        userService.authorize(ctx.header("Authorization"));
+        String username = userService.authorize(ctx.header("Authorization"));
+        ctx.attribute("user", username);
     }
 
     public void clearHandler(Context ctx) {

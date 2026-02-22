@@ -15,15 +15,13 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameServiceTest {
-    AuthDAO authDAO;
     GameDAO gameDAO;
     GameService service;
 
     @BeforeEach
     void setUp() {
-        authDAO = new MemoryAuthDAO();
         gameDAO = new MemoryGameDAO();
-        service = new GameService(authDAO, gameDAO);
+        service = new GameService(gameDAO);
     }
 
     @Test
