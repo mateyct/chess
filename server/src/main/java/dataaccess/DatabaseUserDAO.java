@@ -3,6 +3,8 @@ package dataaccess;
 import model.UserData;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DatabaseUserDAO implements UserDAO {
@@ -22,7 +24,24 @@ public class DatabaseUserDAO implements UserDAO {
     }
 
     @Override
-    public UserData getUser(String username) {
+    public UserData getUser(String username) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT username, password, email FROM user WHERE username = ?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (ResultSet results = ps.executeQuery()) {
+                    if (results.next()) {
+                        String dbUsername = results.getString("username");
+                        String password = results.getString("password");
+                        String email = results.getString("email");
+                        return new UserData(dbUsername, password, email);
+                    }
+                }
+            }
+        }
+        catch (SQLException ex) {
+            throw new DataAccessException("Unable to configure database for users.", ex);
+        }
         return null;
     }
 
