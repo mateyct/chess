@@ -74,4 +74,33 @@ public class DatabaseManager {
         var port = Integer.parseInt(props.getProperty("db.port"));
         connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
     }
+
+    int executeUpdate(String statement, Object... params) throws DataAccessException {
+        try (Connection conn = getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
+                preparedStatement.execute();
+                for (int i = 0; i < params.length; i++) {
+                    Object param = params[i];
+                    switch (param) {
+                        case String p -> preparedStatement.setString(i + 1, p);
+                        case Integer p -> preparedStatement.setInt(i + 1, p);
+                        case null -> preparedStatement.setNull(i + 1, Types.NULL);
+                        default -> {
+                        }
+                    }
+                }
+                preparedStatement.executeUpdate();
+
+                ResultSet results = preparedStatement.getGeneratedKeys();
+                if (results.next()) {
+                    return results.getInt(1);
+                }
+
+                return 0;
+            }
+        }
+        catch (SQLException ex) {
+            throw new DataAccessException("Unable to configure database for users.", ex);
+        }
+    }
 }
