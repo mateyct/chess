@@ -25,23 +25,33 @@ public class GameService {
     }
 
     public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {
-        if (StringUtility.checkInvalidString(request.gameName())) {
-            throw new BadGameDataException("Missing game name.");
+        try {
+            if (StringUtility.checkInvalidString(request.gameName())) {
+                throw new BadGameDataException("Missing game name.");
+            }
+            GameData gameData = new GameData(
+                    0,
+                    null,
+                    null,
+                    request.gameName(),
+                    new ChessGame()
+            );
+            int id = gameDAO.createGame(gameData);
+            return new CreateGameResult(id);
         }
-        GameData gameData = new GameData(
-                0,
-                null,
-                null,
-                request.gameName(),
-                new ChessGame()
-        );
-        int id = gameDAO.createGame(gameData);
-        return new CreateGameResult(id);
+        catch (DataAccessException ex) {
+            throw new ResponseException(ex.getMessage(), 500);
+        }
     }
 
-    public ListGamesResult listGames() {
-        Collection<GameData> gameList = gameDAO.getGames();
-        return new ListGamesResult(gameList);
+    public ListGamesResult listGames() throws ResponseException {
+        try {
+            Collection<GameData> gameList = gameDAO.getGames();
+            return new ListGamesResult(gameList);
+        }
+        catch (DataAccessException ex) {
+            throw new ResponseException(ex.getMessage(), 500);
+        }
     }
 
     public JoinGameResult joinGame(JoinGameRequest request) throws ResponseException {

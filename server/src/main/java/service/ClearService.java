@@ -1,8 +1,10 @@
 package service;
 
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import exception.ResponseException;
 import result.ClearResult;
 
 public class ClearService {
@@ -16,10 +18,14 @@ public class ClearService {
         this.gameDAO = gameDAO;
     }
 
-    public ClearResult clear() {
-        authDAO.clear();
-        userDAO.clear();
-        gameDAO.clear();
+    public ClearResult clear() throws ResponseException {
+        try {
+            authDAO.clear();
+            userDAO.clear();
+            gameDAO.clear();
+        } catch (DataAccessException e) {
+            throw new ResponseException(e.getMessage(), 500);
+        }
         return new ClearResult();
     }
 }

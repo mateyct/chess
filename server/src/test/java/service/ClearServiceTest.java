@@ -26,17 +26,19 @@ class ClearServiceTest {
 
     @Test
     void testClear() {
-        // set up clear
-        String user = "user";
-        userDAO.createUser(new UserData(user, user, "user@email.com"));
-        String authToken = "auth-token";
-        authDAO.addAuth(new AuthData(authToken, user));
-        ChessGame game = new ChessGame();
-        gameDAO.createGame(new GameData(123, user, "user-2", "Cool Game", game));
-        service.clear();
-        // test that it worked
-        assertNull(userDAO.getUser(user));
-        assertNull(authDAO.getAuth(authToken));
-        assertEquals(0, gameDAO.getGames().size());
+        assertDoesNotThrow(() -> {
+            // set up clear
+            String user = "user";
+            userDAO.createUser(new UserData(user, user, "user@email.com"));
+            String authToken = "auth-token";
+            authDAO.addAuth(new AuthData(authToken, user));
+            ChessGame game = new ChessGame();
+            gameDAO.createGame(new GameData(123, user, "user-2", "Cool Game", game));
+            service.clear();
+            // test that it worked
+            assertNull(userDAO.getUser(user));
+            assertNull(authDAO.getAuth(authToken));
+            assertEquals(0, gameDAO.getGames().size());
+        });
     }
 }

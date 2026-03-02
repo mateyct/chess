@@ -53,7 +53,7 @@ public class Handlers {
         ctx.json(serialize(result));
     }
 
-    public void listGamesHandler(Context ctx) {
+    public void listGamesHandler(Context ctx) throws ResponseException {
         ListGamesResult games = gameService.listGames();
         ctx.json(serialize(games));
     }
@@ -70,7 +70,7 @@ public class Handlers {
         ctx.attribute("user", username);
     }
 
-    public void clearHandler(Context ctx) {
+    public void clearHandler(Context ctx) throws ResponseException {
         ClearResult result = clearService.clear();
         String json = serialize(result);
         ctx.json(json);

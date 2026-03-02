@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import exception.AlreadyTakenException;
 import exception.BadRequestException;
@@ -14,6 +15,7 @@ import result.LogoutResult;
 import result.RegisterResult;
 import util.StringUtility;
 
+import javax.xml.crypto.Data;
 import java.util.UUID;
 
 public class UserService {
@@ -26,56 +28,76 @@ public class UserService {
     }
 
     public RegisterResult register(RegisterRequest request) throws ResponseException {
-        if (StringUtility.checkInvalidString(request.username()) ||
-                StringUtility.checkInvalidString(request.password()) ||
-                StringUtility.checkInvalidString(request.email())
-        ) {
-            throw new BadRequestException("Incorrect fields, requires: username, password, and email");
+        try {
+            if (StringUtility.checkInvalidString(request.username()) ||
+                    StringUtility.checkInvalidString(request.password()) ||
+                    StringUtility.checkInvalidString(request.email())
+            ) {
+                throw new BadRequestException("Incorrect fields, requires: username, password, and email");
+            }
+            UserData existingUser = userDAO.getUser(request.username());
+            if (existingUser != null) {
+                throw new AlreadyTakenException("Username " + request.username() + " is already taken.");
+            }
+            UserData newUser = new UserData(request.username(), request.password(), request.email());
+            userDAO.createUser(newUser);
+            AuthData auth = newAuth(request.username());
+            return new RegisterResult(auth.username(), auth.authToken());
         }
-        UserData existingUser = userDAO.getUser(request.username());
-        if (existingUser != null) {
-            throw new AlreadyTakenException("Username " + request.username() + " is already taken.");
+        catch (DataAccessException ex) {
+            throw new ResponseException(ex.getMessage(), 500);
         }
-        UserData newUser = new UserData(request.username(), request.password(), request.email());
-        userDAO.createUser(newUser);
-        AuthData auth = newAuth(request.username());
-        return new RegisterResult(auth.username(), auth.authToken());
     }
 
     public LoginResult login(LoginRequest request) throws ResponseException {
-        if (StringUtility.checkInvalidString(request.username()) ||
-                StringUtility.checkInvalidString(request.password())
-        ) {
-            throw new BadRequestException("Incorrect fields, requires: username and password");
+        try {
+            if (StringUtility.checkInvalidString(request.username()) ||
+                    StringUtility.checkInvalidString(request.password())
+            ) {
+                throw new BadRequestException("Incorrect fields, requires: username and password");
+            }
+            UserData user = userDAO.getUser(request.username());
+            if (user == null || !user.password().equals(request.password())) {
+                throw new InvalidCredentialsException("Invalid username or password.");
+            }
+            AuthData auth = newAuth(user.username());
+            return new LoginResult(auth.username(), auth.authToken());
         }
-        UserData user = userDAO.getUser(request.username());
-        if (user == null || !user.password().equals(request.password())) {
-            throw new InvalidCredentialsException("Invalid username or password.");
+        catch (DataAccessException ex) {
+            throw new ResponseException(ex.getMessage(), 500);
         }
-        AuthData auth = newAuth(user.username());
-        return new LoginResult(auth.username(), auth.authToken());
     }
 
-    public LogoutResult logout(LogoutRequest request) throws InvalidCredentialsException {
-        if (request.authToken() == null) {
-            throw new InvalidCredentialsException("Missing authentication token.");
+    public LogoutResult logout(LogoutRequest request) throws ResponseException {
+        try {
+            if (request.authToken() == null) {
+                throw new InvalidCredentialsException("Missing authentication token.");
+            }
+            authDAO.removeAuth(request.authToken());
+            return new LogoutResult();
         }
-        authDAO.removeAuth(request.authToken());
-        return new LogoutResult();
+        catch (DataAccessException ex) {
+            throw new ResponseException(ex.getMessage(), 500);
+        }
     }
 
     public String authorize(String authToken) throws ResponseException {
-        if (authToken == null) {
-            throw new InvalidCredentialsException("Missing authentication token.");
+        try {
+            if (authToken == null) {
+                throw new InvalidCredentialsException("Missing authentication token.");
+            }
+            AuthData authData = authDAO.getAuth(authToken);
+            if (authData == null) {
+                throw new InvalidCredentialsException("Invalid authentication token.");
+            }
+            return authData.username();
         }
-        AuthData authData = authDAO.getAuth(authToken);
-        if (authData == null) {
-            throw new InvalidCredentialsException("Invalid authentication token.");
+        catch (DataAccessException ex) {
+            throw new ResponseException(ex.getMessage(), 500);
         }
-        return authData.username();
     }
 
-    private AuthData newAuth(String username) {
+    private AuthData newAuth(String username) throws DataAccessException {
         AuthData auth = new AuthData(UUID.randomUUID().toString(), username);
         authDAO.addAuth(auth);
         return auth;

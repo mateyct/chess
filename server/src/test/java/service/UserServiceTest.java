@@ -30,16 +30,16 @@ class UserServiceTest {
     void testRegisterUser() {
         // assert correct starting state
         String user = "user";
-        assertNull(userDAO.getUser(user));
         // run function
         UserData userData = new UserData(user, user, "user@email.com");
         assertDoesNotThrow(() -> {
+            assertNull(userDAO.getUser(user));
             RegisterResult result = service.register(new RegisterRequest(user, user, "user@email.com"));
             AuthData authData = authDAO.getAuth(result.getAuthToken());
             assertEquals(user, authData.username());
+            // test worked
+            assertEquals(userData, userDAO.getUser(user));
         });
-        // test worked
-        assertEquals(userData, userDAO.getUser(user));
     }
 
     // negative test register
@@ -48,7 +48,7 @@ class UserServiceTest {
         // setup starting state
         String user = "user";
         UserData userData = new UserData(user, user, "user@email.com");
-        userDAO.createUser(userData);
+        assertDoesNotThrow(() -> userDAO.createUser(userData));
         // run function
         assertThrows(AlreadyTakenException.class, () -> {
             service.register(new RegisterRequest(user, user, "user@email.com"));
@@ -61,14 +61,14 @@ class UserServiceTest {
         // set up starting state
         String user = "user";
         UserData userData = new UserData(user, user, "user@email.com");
-        userDAO.createUser(userData);
         // run function
         assertDoesNotThrow(() -> {
+            userDAO.createUser(userData);
             LoginResult result = service.login(new LoginRequest(user, user));
             AuthData authData = authDAO.getAuth(result.getAuthToken());
             assertEquals(user, authData.username());
+            assertEquals(userData, userDAO.getUser(user));
         });
-        assertEquals(userData, userDAO.getUser(user));
     }
 
     @Test
@@ -77,7 +77,7 @@ class UserServiceTest {
         String user = "user";
         String fakeUser = "user-fake";
         UserData userData = new UserData(user, user, "user@email.com");
-        userDAO.createUser(userData);
+        assertDoesNotThrow(() -> userDAO.createUser(userData));
         // run function
         assertThrows(InvalidCredentialsException.class, () -> {
             service.login(new LoginRequest(fakeUser, user));
@@ -88,12 +88,12 @@ class UserServiceTest {
     void testLogoutUser() {
         String authToken = "test-token";
         AuthData auth = new AuthData(authToken, "user");
-        authDAO.addAuth(auth);
-        assertNotNull(authDAO.getAuth(authToken));
         assertDoesNotThrow(() -> {
+            authDAO.addAuth(auth);
+            assertNotNull(authDAO.getAuth(authToken));
             service.logout(new LogoutRequest(authToken));
+            assertNull(authDAO.getAuth(authToken));
         });
-        assertNull(authDAO.getAuth(authToken));
     }
 
     @Test
@@ -107,8 +107,8 @@ class UserServiceTest {
     @Test
     void testAuthorize() {
         AuthData authData = new AuthData("test-token", "Dave");
-        authDAO.addAuth(authData);
         assertDoesNotThrow(() -> {
+            authDAO.addAuth(authData);
             String retrievedUser = service.authorize(authData.authToken());
             assertEquals(authData.username(), retrievedUser);
         });

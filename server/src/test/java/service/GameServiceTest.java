@@ -55,34 +55,37 @@ class GameServiceTest {
     void testListGames() {
         GameData game1 = new GameData(1, "Dave", "Bill", "Cool game", new ChessGame());
         GameData game2 = new GameData(2, "Max", null, "Coolest game", new ChessGame());
-        gameDAO.createGame(game1);
-        gameDAO.createGame(game2);
-        ListGamesResult result = service.listGames();
-        assertInstanceOf(ArrayList.class, result.getGames());
-        ArrayList<ListGamesResult.GameMetadata> games = (ArrayList<ListGamesResult.GameMetadata>)result.getGames();
-        assertEquals(game1.gameId(), games.getFirst().gameID());
-        assertEquals(game1.whiteUsername(), games.getFirst().whiteUsername());
-        assertEquals(game1.blackUsername(), games.getFirst().blackUsername());
-        assertEquals(game1.gameName(), games.getFirst().gameName());
-        assertEquals(game2.gameId(), games.get(1).gameID());
-        assertEquals(game2.whiteUsername(), games.get(1).whiteUsername());
-        assertEquals(game2.blackUsername(), games.get(1).blackUsername());
-        assertEquals(game2.gameName(), games.get(1).gameName());
+        assertDoesNotThrow(() -> {
+            gameDAO.createGame(game1);
+            gameDAO.createGame(game2);
+            ListGamesResult result = service.listGames();
+            assertInstanceOf(ArrayList.class, result.getGames());
+            ArrayList<ListGamesResult.GameMetadata> games = (ArrayList<ListGamesResult.GameMetadata>) result.getGames();
+            assertEquals(game1.gameId(), games.getFirst().gameID());
+            assertEquals(game1.whiteUsername(), games.getFirst().whiteUsername());
+            assertEquals(game1.blackUsername(), games.getFirst().blackUsername());
+            assertEquals(game1.gameName(), games.getFirst().gameName());
+            assertEquals(game2.gameId(), games.get(1).gameID());
+            assertEquals(game2.whiteUsername(), games.get(1).whiteUsername());
+            assertEquals(game2.blackUsername(), games.get(1).blackUsername());
+            assertEquals(game2.gameName(), games.get(1).gameName());
+        });
     }
 
     @Test
     void testEmptyListGames() {
-        ListGamesResult result = service.listGames();
-        assertEquals(0, result.getGames().size());
+        assertDoesNotThrow(() -> {
+            ListGamesResult result = service.listGames();
+            assertEquals(0, result.getGames().size());
+        });
     }
 
     @Test
     void testJoinGame() {
         GameData existingGame = new GameData(1, "Marv", null, "Cool", new ChessGame());
-        gameDAO.createGame(existingGame);
-
         JoinGameRequest request = new JoinGameRequest("BLACK", 1, "Dave");
         assertDoesNotThrow(() -> {
+            gameDAO.createGame(existingGame);
             service.joinGame(request);
             GameData changedGame = gameDAO.getGame(1);
             assertEquals(request.username(), changedGame.blackUsername());
@@ -92,7 +95,7 @@ class GameServiceTest {
     @Test
     void testJoinInvalidSpot() {
         GameData existingGame = new GameData(1, "Marv", null, "Cool", new ChessGame());
-        gameDAO.createGame(existingGame);
+        assertDoesNotThrow(() -> gameDAO.createGame(existingGame));
 
         JoinGameRequest request = new JoinGameRequest(null, 1, "Dave");
         assertThrows(BadGameDataException.class, () -> {
