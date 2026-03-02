@@ -14,13 +14,15 @@ public class DatabaseUserDAO implements UserDAO {
     }
 
     @Override
-    public void clear() {
-
+    public void clear() throws DataAccessException {
+        String statement = "TRUNCATE user";
+        DatabaseManager.executeUpdate(statement);
     }
 
     @Override
-    public void createUser(UserData userData) {
-
+    public void createUser(UserData userData) throws DataAccessException {
+        String statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
+        DatabaseManager.executeUpdate(statement, userData.username(), userData.password(), userData.email());
     }
 
     @Override
