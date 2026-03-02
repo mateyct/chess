@@ -1,5 +1,7 @@
 package server;
 
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import exception.ResponseException;
 import io.javalin.*;
 
@@ -9,6 +11,15 @@ public class Server {
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
+
+        // set up database
+        try {
+            DatabaseManager.createDatabase();
+        }
+        catch (DataAccessException ex) {
+            throw new RuntimeException("Failed to set up database: " + ex.getMessage());
+        }
+
         Handlers handlers = new Handlers();
 
         javalin.post("/user", handlers::registerHandler);

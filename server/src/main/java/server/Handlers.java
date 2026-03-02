@@ -21,12 +21,17 @@ public class Handlers {
     private final GameService gameService;
 
     public Handlers() {
-        authDAO = new MemoryAuthDAO();
-        userDAO = new MemoryUserDAO();
-        gameDAO = new MemoryGameDAO();
-        userService = new UserService(authDAO, userDAO);
-        clearService = new ClearService(authDAO, userDAO, gameDAO);
-        gameService = new GameService(gameDAO);
+        try {
+            authDAO = new MemoryAuthDAO();
+            userDAO = new DatabaseUserDAO();
+            gameDAO = new MemoryGameDAO();
+            userService = new UserService(authDAO, userDAO);
+            clearService = new ClearService(authDAO, userDAO, gameDAO);
+            gameService = new GameService(gameDAO);
+        }
+        catch (DataAccessException ex) {
+            throw new RuntimeException("Failed to set up database connections: " + ex.getMessage());
+        }
     }
 
     public void registerHandler(Context ctx) throws ResponseException {
