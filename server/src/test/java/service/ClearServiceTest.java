@@ -5,6 +5,7 @@ import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,12 +17,22 @@ class ClearServiceTest {
     AuthDAO authDAO;
     ClearService service;
 
+    @BeforeAll
+    static void init() {
+        assertDoesNotThrow(DatabaseManager::createDatabase);
+    }
+
     @BeforeEach
     void setUp() {
-        userDAO = new MemoryUserDAO();
-        gameDAO = new MemoryGameDAO();
-        authDAO = new MemoryAuthDAO();
-        service = new ClearService(authDAO, userDAO, gameDAO);
+        assertDoesNotThrow(() -> {
+            userDAO = new DatabaseUserDAO();
+            gameDAO = new MemoryGameDAO();
+            authDAO = new MemoryAuthDAO();
+            service = new ClearService(authDAO, userDAO, gameDAO);
+            userDAO.clear();
+            gameDAO.clear();
+            authDAO.clear();
+        });
     }
 
     @Test

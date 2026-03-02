@@ -49,7 +49,7 @@ public class DatabaseUserDAO implements UserDAO {
 
     private static final String createStatement = """
             CREATE TABLE IF NOT EXISTS user (
-                `id` int NOT NULL AUTO_INCREMENT,
+                `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
                 `username` VARCHAR(256) NOT NULL,
                 `password` TEXT NOT NULL,
                 `email` VARCHAR(256) NOT NULL
@@ -63,7 +63,7 @@ public class DatabaseUserDAO implements UserDAO {
             }
         }
         catch (SQLException ex) {
-            throw new DataAccessException("Unable to configure database for users.", ex);
+            throw new DataAccessException("Unable to configure database for users." + ex.getMessage(), ex);
         }
     }
 }

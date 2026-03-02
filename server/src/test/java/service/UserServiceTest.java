@@ -5,6 +5,7 @@ import exception.AlreadyTakenException;
 import exception.InvalidCredentialsException;
 import model.AuthData;
 import model.UserData;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import request.*;
@@ -18,11 +19,20 @@ class UserServiceTest {
     AuthDAO authDAO;
     UserService service;
 
+    @BeforeAll
+    static void init() {
+        assertDoesNotThrow(DatabaseManager::createDatabase);
+    }
+
     @BeforeEach
     void setUp() {
-        userDAO = new MemoryUserDAO();
-        authDAO = new MemoryAuthDAO();
-        service = new UserService(authDAO, userDAO);
+        assertDoesNotThrow(() -> {
+            userDAO = new DatabaseUserDAO();
+            authDAO = new MemoryAuthDAO();
+            service = new UserService(authDAO, userDAO);
+            userDAO.clear();
+            authDAO.clear();
+        });
     }
 
     // positive test register

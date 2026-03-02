@@ -78,7 +78,6 @@ public class DatabaseManager {
     static int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (Connection conn = getConnection()) {
             try (var preparedStatement = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
-                preparedStatement.execute();
                 for (int i = 0; i < params.length; i++) {
                     Object param = params[i];
                     switch (param) {
@@ -100,7 +99,7 @@ public class DatabaseManager {
             }
         }
         catch (SQLException ex) {
-            throw new DataAccessException("Unable to configure database for users.", ex);
+            throw new DataAccessException("Error while executing database update: " + ex.getMessage());
         }
     }
 }
