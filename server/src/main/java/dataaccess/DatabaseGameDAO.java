@@ -88,7 +88,7 @@ public class DatabaseGameDAO implements GameDAO {
     public void updateGame(int gameId, GameData gameData) throws DataAccessException {
         String statement = """
                 UPDATE game
-                SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ?,
+                SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ?
                 WHERE id = ?
                 """;
         DatabaseManager.executeUpdate(
@@ -104,8 +104,8 @@ public class DatabaseGameDAO implements GameDAO {
     private static final String createStatement = """
             CREATE TABLE IF NOT EXISTS game (
                 `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-                `whiteUsername` VARCHAR(256) NOT NULL,
-                `blackUsername` VARCHAR(256) NOT NULL,
+                `whiteUsername` VARCHAR(256),
+                `blackUsername` VARCHAR(256),
                 `gameName` VARCHAR(256) NOT NULL,
                 `game` TEXT NOT NULL
             )

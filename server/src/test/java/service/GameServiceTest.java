@@ -4,6 +4,7 @@ import chess.ChessGame;
 import dataaccess.*;
 import exception.BadGameDataException;
 import model.GameData;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import request.CreateGameRequest;
@@ -19,10 +20,18 @@ class GameServiceTest {
     GameDAO gameDAO;
     GameService service;
 
+    @BeforeAll
+    static void init() {
+        assertDoesNotThrow(DatabaseManager::createDatabase);
+    }
+
     @BeforeEach
     void setUp() {
-        gameDAO = new MemoryGameDAO();
-        service = new GameService(gameDAO);
+        assertDoesNotThrow(() -> {
+            gameDAO = new DatabaseGameDAO();
+            service = new GameService(gameDAO);
+            gameDAO.clear();
+        });
     }
 
     @Test

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import exception.ResponseException;
 import io.javalin.http.Context;
+import model.GameData;
 import request.*;
 import result.*;
 import service.ClearService;
@@ -13,18 +14,15 @@ import service.UserService;
 import java.lang.reflect.Type;
 
 public class Handlers {
-    private final AuthDAO authDAO;
-    private final UserDAO userDAO;
-    private final GameDAO gameDAO;
     private final UserService userService;
     private final ClearService clearService;
     private final GameService gameService;
 
     public Handlers() {
         try {
-            authDAO = new DatabaseAuthDAO();
-            userDAO = new DatabaseUserDAO();
-            gameDAO = new MemoryGameDAO();
+            AuthDAO authDAO = new DatabaseAuthDAO();
+            UserDAO userDAO = new DatabaseUserDAO();
+            GameDAO gameDAO = new DatabaseGameDAO();
             userService = new UserService(authDAO, userDAO);
             clearService = new ClearService(authDAO, userDAO, gameDAO);
             gameService = new GameService(gameDAO);
