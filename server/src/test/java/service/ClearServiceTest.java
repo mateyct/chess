@@ -27,7 +27,7 @@ class ClearServiceTest {
         assertDoesNotThrow(() -> {
             userDAO = new DatabaseUserDAO();
             gameDAO = new MemoryGameDAO();
-            authDAO = new MemoryAuthDAO();
+            authDAO = new DatabaseAuthDAO();
             service = new ClearService(authDAO, userDAO, gameDAO);
             userDAO.clear();
             gameDAO.clear();

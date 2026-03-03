@@ -22,7 +22,7 @@ public class Handlers {
 
     public Handlers() {
         try {
-            authDAO = new MemoryAuthDAO();
+            authDAO = new DatabaseAuthDAO();
             userDAO = new DatabaseUserDAO();
             gameDAO = new MemoryGameDAO();
             userService = new UserService(authDAO, userDAO);

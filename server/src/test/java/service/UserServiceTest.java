@@ -28,7 +28,7 @@ class UserServiceTest {
     void setUp() {
         assertDoesNotThrow(() -> {
             userDAO = new DatabaseUserDAO();
-            authDAO = new MemoryAuthDAO();
+            authDAO = new DatabaseAuthDAO();
             service = new UserService(authDAO, userDAO);
             userDAO.clear();
             authDAO.clear();

@@ -56,7 +56,7 @@ public class DatabaseAuthDAO implements AuthDAO {
         CREATE TABLE IF NOT EXISTS auth (
             `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
             `token` TEXT NOT NULL,
-            `username` VARCHAR(256) NOT NULL,
+            `username` VARCHAR(256) NOT NULL
         )
     """;
 
@@ -67,7 +67,7 @@ public class DatabaseAuthDAO implements AuthDAO {
             }
         }
         catch (SQLException ex) {
-            throw new DataAccessException("Unable to configure database for users." + ex.getMessage(), ex);
+            throw new DataAccessException("Unable to configure database for auth." + ex.getMessage(), ex);
         }
     }
 }

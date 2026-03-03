@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
 import result.CreateGameResult;
-import result.JoinGameResult;
 import result.ListGamesResult;
 
 import java.util.ArrayList;
