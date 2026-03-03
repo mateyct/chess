@@ -86,7 +86,19 @@ public class DatabaseGameDAO implements GameDAO {
 
     @Override
     public void updateGame(int gameId, GameData gameData) throws DataAccessException {
-
+        String statement = """
+                UPDATE game
+                SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ?,
+                WHERE id = ?
+                """;
+        DatabaseManager.executeUpdate(
+                statement,
+                gameData.whiteUsername(),
+                gameData.blackUsername(),
+                gameData.gameName(),
+                serializeGame(gameData.game()),
+                gameId
+        );
     }
 
     private static final String createStatement = """
