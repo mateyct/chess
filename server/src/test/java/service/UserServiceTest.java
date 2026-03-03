@@ -48,7 +48,9 @@ class UserServiceTest {
             AuthData authData = authDAO.getAuth(result.getAuthToken());
             assertEquals(user, authData.username());
             // test worked
-            assertEquals(userData, userDAO.getUser(user));
+            UserData dbUser = userDAO.getUser(user);
+            assertEquals(userData.username(), dbUser.username());
+            assertEquals(userData.email(), dbUser.email());
         });
     }
 
@@ -73,11 +75,13 @@ class UserServiceTest {
         UserData userData = new UserData(user, user, "user@email.com");
         // run function
         assertDoesNotThrow(() -> {
-            userDAO.createUser(userData);
+            service.register(new RegisterRequest(user, user, "user@email.com"));
             LoginResult result = service.login(new LoginRequest(user, user));
             AuthData authData = authDAO.getAuth(result.getAuthToken());
             assertEquals(user, authData.username());
-            assertEquals(userData, userDAO.getUser(user));
+            UserData dbUser = userDAO.getUser(user);
+            assertEquals(userData.username(), dbUser.username());
+            assertEquals(userData.email(), dbUser.email());
         });
     }
 

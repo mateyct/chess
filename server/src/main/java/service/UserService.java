@@ -9,6 +9,7 @@ import exception.InvalidCredentialsException;
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import request.*;
 import result.LoginResult;
 import result.LogoutResult;
@@ -39,7 +40,8 @@ public class UserService {
             if (existingUser != null) {
                 throw new AlreadyTakenException("Username " + request.username() + " is already taken.");
             }
-            UserData newUser = new UserData(request.username(), request.password(), request.email());
+            String hashedPassword = BCrypt.hashpw(request.password(), BCrypt.gensalt());
+            UserData newUser = new UserData(request.username(), hashedPassword, request.email());
             userDAO.createUser(newUser);
             AuthData auth = newAuth(request.username());
             return new RegisterResult(auth.username(), auth.authToken());
@@ -57,7 +59,7 @@ public class UserService {
                 throw new BadRequestException("Incorrect fields, requires: username and password");
             }
             UserData user = userDAO.getUser(request.username());
-            if (user == null || !user.password().equals(request.password())) {
+            if (user == null || !BCrypt.checkpw(request.password(), user.password())) {
                 throw new InvalidCredentialsException("Invalid username or password.");
             }
             AuthData auth = newAuth(user.username());
