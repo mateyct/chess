@@ -8,6 +8,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DatabaseAuthDAO implements AuthDAO {
+
+    public DatabaseAuthDAO() throws DataAccessException {
+        configureDatabase();
+    }
+
     @Override
     public void clear() throws DataAccessException {
         String statement = "TRUNCATE auth";
@@ -37,16 +42,18 @@ public class DatabaseAuthDAO implements AuthDAO {
 
     @Override
     public void removeAuth(String authToken) throws DataAccessException {
-
+        String statement = "DELETE FROM auth WHERE token = ?";
+        DatabaseManager.executeUpdate(statement, authToken);
     }
 
     @Override
     public void addAuth(AuthData authData) throws DataAccessException {
-
+        String statement = "INSERT INTO auth (token, username) VALUES (?, ?)";
+        DatabaseManager.executeUpdate(statement, authData.authToken(), authData.username());
     }
 
     private static final String createStatement = """
-        CREATE TABLE IF NOT EXISTS user (
+        CREATE TABLE IF NOT EXISTS auth (
             `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
             `token` TEXT NOT NULL,
             `username` VARCHAR(256) NOT NULL,
