@@ -8,10 +8,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class DatabaseGameDAO implements GameDAO {
+
+    public DatabaseGameDAO() throws DataAccessException {
+        configureDatabase();
+    }
+
     @Override
     public void clear() throws DataAccessException {
         String statement = "TRUNCATE game";
@@ -20,7 +25,14 @@ public class DatabaseGameDAO implements GameDAO {
 
     @Override
     public int createGame(GameData gameData) throws DataAccessException {
-        return 0;
+        String statement = "INSERT INTO game (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
+        return DatabaseManager.executeUpdate(
+            statement,
+            gameData.whiteUsername(),
+            gameData.blackUsername(),
+            gameData.gameName(),
+            serializeGame(gameData.game())
+        );
     }
 
     @Override
@@ -31,14 +43,7 @@ public class DatabaseGameDAO implements GameDAO {
                 ps.setInt(1, id);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        ChessGame chessGame = deserializeGame(rs.getString(5));
-                        return new GameData(
-                            rs.getInt(1),
-                            rs.getString(2),
-                            rs.getString(3),
-                            rs.getString(4),
-                            chessGame
-                        );
+                        return readGame(rs);
                     }
                 }
             }
@@ -49,19 +54,39 @@ public class DatabaseGameDAO implements GameDAO {
         return null;
     }
 
+    private GameData readGame(ResultSet resultSet) throws SQLException {
+        ChessGame chessGame = deserializeGame(resultSet.getString(5));
+        return new GameData(
+            resultSet.getInt(1),
+            resultSet.getString(2),
+            resultSet.getString(3),
+            resultSet.getString(4),
+            chessGame
+        );
+    }
+
     @Override
     public Collection<GameData> getGames() throws DataAccessException {
-        return List.of();
+        ArrayList<GameData> list = new ArrayList<>();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT id, whiteUsername, blackUsername, gameName, game FROM game";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        list.add(readGame(rs));
+                    }
+                }
+            }
+        }
+        catch (SQLException ex) {
+            throw new DataAccessException("Error getting game list: " + ex.getMessage());
+        }
+        return list;
     }
 
     @Override
     public void updateGame(int gameId, GameData gameData) throws DataAccessException {
 
-    }
-
-    @Override
-    public int gameCount() throws DataAccessException {
-        return 0;
     }
 
     private static final String createStatement = """
@@ -88,5 +113,10 @@ public class DatabaseGameDAO implements GameDAO {
     private ChessGame deserializeGame(String gameString) {
         Gson gson = new Gson();
         return gson.fromJson(gameString, ChessGame.class);
+    }
+
+    private String serializeGame(ChessGame game) {
+        Gson gson = new Gson();
+        return gson.toJson(game);
     }
 }

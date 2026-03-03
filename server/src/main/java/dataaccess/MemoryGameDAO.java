@@ -62,8 +62,7 @@ public class MemoryGameDAO implements GameDAO {
         gameCollection.set(gameIndex, gameData);
     }
 
-    @Override
-    public int gameCount() {
+    private int gameCount() {
         return gameCollection.size();
     }
 }

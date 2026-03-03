@@ -14,6 +14,4 @@ public interface GameDAO {
     public Collection<GameData> getGames() throws DataAccessException;
 
     public void updateGame(int gameId, GameData gameData) throws DataAccessException;
-
-    public int gameCount() throws DataAccessException;
 }
