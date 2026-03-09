@@ -22,9 +22,9 @@ public class UserDAOTest {
     @BeforeEach
     void setUp() {
         assertDoesNotThrow(() -> {
+            dao = new DatabaseUserDAO();
             String statement = "TRUNCATE user";
             DatabaseManager.executeUpdate(statement);
-            dao = new DatabaseUserDAO();
         });
     }
 
