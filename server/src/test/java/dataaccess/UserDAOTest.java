@@ -22,8 +22,9 @@ public class UserDAOTest {
     @BeforeEach
     void setUp() {
         assertDoesNotThrow(() -> {
+            String statement = "TRUNCATE user";
+            DatabaseManager.executeUpdate(statement);
             dao = new DatabaseUserDAO();
-            dao.clear();
         });
     }
 
@@ -64,6 +65,52 @@ public class UserDAOTest {
         assertDoesNotThrow(() -> {
             UserData dbUser = dao.getUser(username);
             assertNull(dbUser);
+        });
+    }
+
+    @Test
+    void testCreateUser() {
+        String username = "User2";
+        String password = "Pass2";
+        String email = "email2@email.com";
+        assertDoesNotThrow(() -> {
+            // ensure user isn't in database
+            UserData dbUser = dao.getUser(username);
+            assertNull(dbUser);
+            // add the user
+            dao.createUser(new UserData(username, password, email));
+            // test to see if it was added
+            dbUser = dao.getUser(username);
+            assertEquals(username, dbUser.username());
+            assertEquals(password, dbUser.password());
+            assertEquals(email, dbUser.email());
+        });
+    }
+
+    @Test
+    void testCreateUserDuplicate() {
+        String username = "User3";
+        String password = "Pass3";
+        String email = "email3@email.com";
+        assertDoesNotThrow(() -> {
+            // add the user
+            dao.createUser(new UserData(username, password, email));
+            // test to see if it was added
+            UserData dbUser = dao.getUser(username);
+            assertEquals(username, dbUser.username());
+            assertEquals(password, dbUser.password());
+            assertEquals(email, dbUser.email());
+        });
+        assertThrows(DataAccessException.class, () -> {
+            // try creating again with same username
+            dao.createUser(new UserData(username, "bad", "bad"));
+        });
+        assertDoesNotThrow(() -> {
+            // ensure the user data is from the first one
+            UserData dbUser = dao.getUser(username);
+            assertEquals(username, dbUser.username());
+            assertEquals(password, dbUser.password());
+            assertEquals(email, dbUser.email());
         });
     }
 }
