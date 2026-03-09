@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -112,5 +113,37 @@ public class UserDAOTest {
             assertEquals(password, dbUser.password());
             assertEquals(email, dbUser.email());
         });
+    }
+
+    private int getTableSize() {
+        String statement = "SELECT COUNT(*) FROM user";
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        catch (DataAccessException | SQLException e) {
+            fail("Error interacting with the database");
+        }
+        return -1;
+    }
+
+    @Test
+    void testClear() {
+        UserData user1 = new UserData("user1", "pass1", "email1");
+        UserData user2 = new UserData("user2", "pass2", "email2");
+        // insert data into database
+        assertDoesNotThrow(() -> {
+            dao.createUser(user1);
+            dao.createUser(user2);
+        });
+        // check size
+        assertEquals(2, getTableSize());
+        // clear and check size again
+        assertDoesNotThrow(dao::clear);
+        assertEquals(0, getTableSize());
     }
 }
