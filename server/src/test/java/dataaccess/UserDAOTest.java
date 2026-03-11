@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,13 +48,12 @@ public class UserDAOTest {
         String username = "User1";
         String password = "Pass1";
         String email = "email1@email.com";
+        UserData user = new UserData(username, password, email);
         insertUser(username, password, email);
         // run the test and assertions
         assertDoesNotThrow(() -> {
             UserData dbUser = dao.getUser(username);
-            assertEquals(username, dbUser.username());
-            assertEquals(password, dbUser.password());
-            assertEquals(email, dbUser.email());
+            assertEquals(user, dbUser);
         });
     }
 
@@ -105,28 +103,12 @@ public class UserDAOTest {
             // try creating again with same username
             dao.createUser(new UserData(username, "bad", "bad"));
         });
+        UserData user = new UserData(username, password, email);
         assertDoesNotThrow(() -> {
             // ensure the user data is from the first one
             UserData dbUser = dao.getUser(username);
-            assertEquals(username, dbUser.username());
-            assertEquals(password, dbUser.password());
-            assertEquals(email, dbUser.email());
+            assertEquals(user, dbUser);
         });
-    }
-
-    private int getTableSize() {
-        String statement = "SELECT COUNT(*) FROM user";
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = conn.prepareStatement(statement)) {
-                ResultSet rs = ps.executeQuery();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-            }
-        } catch (DataAccessException | SQLException e) {
-            fail("Error interacting with the database");
-        }
-        return -1;
     }
 
     @Test
@@ -139,9 +121,9 @@ public class UserDAOTest {
             dao.createUser(user2);
         });
         // check size
-        assertEquals(2, getTableSize());
+        assertEquals(2, JunitUtils.getTableSize("user"));
         // clear and check size again
         assertDoesNotThrow(dao::clear);
-        assertEquals(0, getTableSize());
+        assertEquals(0, JunitUtils.getTableSize("user"));
     }
 }

@@ -83,9 +83,7 @@ public class DatabaseManager {
                     switch (param) {
                         case String p -> preparedStatement.setString(i + 1, p);
                         case Integer p -> preparedStatement.setInt(i + 1, p);
-                        case null -> preparedStatement.setNull(i + 1, Types.NULL);
-                        default -> {
-                        }
+                        case null, default -> preparedStatement.setNull(i + 1, Types.NULL);
                     }
                 }
                 preparedStatement.executeUpdate();

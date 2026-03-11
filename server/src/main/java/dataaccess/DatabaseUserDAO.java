@@ -46,7 +46,7 @@ public class DatabaseUserDAO implements UserDAO {
         return null;
     }
 
-    private static final String createStatement = """
+    private static final String CREATE_STATEMENT = """
         CREATE TABLE IF NOT EXISTS user (
             `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
             `username` VARCHAR(256) UNIQUE NOT NULL,
@@ -57,7 +57,7 @@ public class DatabaseUserDAO implements UserDAO {
 
     private void configureDatabase() throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(createStatement)) {
+            try (var preparedStatement = conn.prepareStatement(CREATE_STATEMENT)) {
                 preparedStatement.execute();
             }
         } catch (SQLException ex) {

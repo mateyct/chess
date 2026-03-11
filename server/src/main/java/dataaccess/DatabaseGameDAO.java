@@ -99,7 +99,7 @@ public class DatabaseGameDAO implements GameDAO {
         );
     }
 
-    private static final String createStatement = """
+    private static final String CREATE_STATEMENT = """
         CREATE TABLE IF NOT EXISTS game (
             `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
             `whiteUsername` VARCHAR(256),
@@ -111,7 +111,7 @@ public class DatabaseGameDAO implements GameDAO {
 
     private void configureDatabase() throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = conn.prepareStatement(createStatement)) {
+            try (PreparedStatement ps = conn.prepareStatement(CREATE_STATEMENT)) {
                 ps.execute();
             }
         } catch (SQLException ex) {

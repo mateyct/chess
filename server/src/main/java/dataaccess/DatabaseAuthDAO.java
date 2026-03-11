@@ -51,7 +51,7 @@ public class DatabaseAuthDAO implements AuthDAO {
         DatabaseManager.executeUpdate(statement, authData.authToken(), authData.username());
     }
 
-    private static final String createStatement = """
+    private static final String CREATE_STATEMENT = """
             CREATE TABLE IF NOT EXISTS auth (
                 `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
                 `token` TEXT NOT NULL,
@@ -61,7 +61,7 @@ public class DatabaseAuthDAO implements AuthDAO {
 
     private void configureDatabase() throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(createStatement)) {
+            try (var preparedStatement = conn.prepareStatement(CREATE_STATEMENT)) {
                 preparedStatement.execute();
             }
         } catch (SQLException ex) {

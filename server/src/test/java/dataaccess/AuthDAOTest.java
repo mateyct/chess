@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -123,21 +122,6 @@ public class AuthDAOTest {
         });
     }
 
-    private int getTableSize() {
-        String statement = "SELECT COUNT(*) FROM auth";
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = conn.prepareStatement(statement)) {
-                ResultSet rs = ps.executeQuery();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-            }
-        } catch (DataAccessException | SQLException e) {
-            fail("Error interacting with the database");
-        }
-        return -1;
-    }
-
     @Test
     void testClear() {
         AuthData auth1 = new AuthData("auth1", "user1");
@@ -148,9 +132,9 @@ public class AuthDAOTest {
             dao.addAuth(auth2);
         });
         // check size
-        assertEquals(2, getTableSize());
+        assertEquals(2, JunitUtils.getTableSize("auth"));
         // clear and check size again
         assertDoesNotThrow(dao::clear);
-        assertEquals(0, getTableSize());
+        assertEquals(0, JunitUtils.getTableSize("auth"));
     }
 }
