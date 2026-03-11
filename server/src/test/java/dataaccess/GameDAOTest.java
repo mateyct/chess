@@ -9,6 +9,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -209,6 +213,49 @@ public class GameDAOTest {
                 new ChessGame()
             );
             dao.updateGame(id, invalidGame);
+        });
+    }
+
+    private int getTableSize() {
+        String statement = "SELECT COUNT(*) FROM game";
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        catch (DataAccessException | SQLException e) {
+            fail("Error interacting with the database");
+        }
+        return -1;
+    }
+
+    @Test
+    void testClear() {
+        GameData game1 = new GameData(
+                1,
+                "white1",
+                "black1",
+                "game1",
+                new ChessGame()
+        );
+        GameData game2 = new GameData(
+                2,
+                "white2",
+                "black2",
+                "game2",
+                new ChessGame()
+        );
+        assertDoesNotThrow(() -> {
+            assertEquals(0, getTableSize());
+            dao.createGame(game1);
+            dao.createGame(game2);
+            assertEquals(2, getTableSize());
+            dao.clear();
+            assertEquals(0, getTableSize());
+
         });
     }
 }
