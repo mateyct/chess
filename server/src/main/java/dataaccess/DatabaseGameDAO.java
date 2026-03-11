@@ -47,8 +47,7 @@ public class DatabaseGameDAO implements GameDAO {
                     }
                 }
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             throw new DataAccessException("Error getting game: " + ex.getMessage());
         }
         return null;
@@ -77,8 +76,7 @@ public class DatabaseGameDAO implements GameDAO {
                     }
                 }
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             throw new DataAccessException("Error getting game list: " + ex.getMessage());
         }
         return list;
@@ -87,37 +85,36 @@ public class DatabaseGameDAO implements GameDAO {
     @Override
     public void updateGame(int gameId, GameData gameData) throws DataAccessException {
         String statement = """
-                UPDATE game
-                SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ?
-                WHERE id = ?
-                """;
+            UPDATE game
+            SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ?
+            WHERE id = ?
+            """;
         DatabaseManager.executeUpdate(
-                statement,
-                gameData.whiteUsername(),
-                gameData.blackUsername(),
-                gameData.gameName(),
-                serializeGame(gameData.game()),
-                gameId
+            statement,
+            gameData.whiteUsername(),
+            gameData.blackUsername(),
+            gameData.gameName(),
+            serializeGame(gameData.game()),
+            gameId
         );
     }
 
     private static final String createStatement = """
-            CREATE TABLE IF NOT EXISTS game (
-                `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-                `whiteUsername` VARCHAR(256),
-                `blackUsername` VARCHAR(256),
-                `gameName` VARCHAR(256) NOT NULL,
-                `game` TEXT NOT NULL
-            )
-            """;
+        CREATE TABLE IF NOT EXISTS game (
+            `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+            `whiteUsername` VARCHAR(256),
+            `blackUsername` VARCHAR(256),
+            `gameName` VARCHAR(256) NOT NULL,
+            `game` TEXT NOT NULL
+        )
+        """;
 
     private void configureDatabase() throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(createStatement)) {
                 ps.execute();
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             throw new DataAccessException("Error configuring game table: " + ex.getMessage());
         }
     }

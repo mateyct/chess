@@ -5,7 +5,7 @@ import model.UserData;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class MemoryUserDAO implements UserDAO  {
+public class MemoryUserDAO implements UserDAO {
     private final Collection<UserData> userCollection;
 
     public MemoryUserDAO() {

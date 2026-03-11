@@ -38,8 +38,7 @@ public class UserDAOTest {
                 ps.setString(3, email);
                 ps.execute();
             }
-        }
-        catch (SQLException | DataAccessException e) {
+        } catch (SQLException | DataAccessException e) {
             fail("Error occurred setting up data in database");
         }
     }
@@ -124,8 +123,7 @@ public class UserDAOTest {
                     return rs.getInt(1);
                 }
             }
-        }
-        catch (DataAccessException | SQLException e) {
+        } catch (DataAccessException | SQLException e) {
             fail("Error interacting with the database");
         }
         return -1;

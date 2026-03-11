@@ -26,8 +26,7 @@ public class Handlers {
             userService = new UserService(authDAO, userDAO);
             clearService = new ClearService(authDAO, userDAO, gameDAO);
             gameService = new GameService(gameDAO);
-        }
-        catch (DataAccessException ex) {
+        } catch (DataAccessException ex) {
             throw new RuntimeException("Failed to set up database connections: " + ex.getMessage());
         }
     }

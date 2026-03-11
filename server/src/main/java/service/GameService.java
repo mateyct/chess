@@ -30,16 +30,15 @@ public class GameService {
                 throw new BadGameDataException("Missing game name.");
             }
             GameData gameData = new GameData(
-                    0,
-                    null,
-                    null,
-                    request.gameName(),
-                    new ChessGame()
+                0,
+                null,
+                null,
+                request.gameName(),
+                new ChessGame()
             );
             int id = gameDAO.createGame(gameData);
             return new CreateGameResult(id);
-        }
-        catch (DataAccessException ex) {
+        } catch (DataAccessException ex) {
             throw new ResponseException(ex.getMessage(), 500);
         }
     }
@@ -48,8 +47,7 @@ public class GameService {
         try {
             Collection<GameData> gameList = gameDAO.getGames();
             return new ListGamesResult(gameList);
-        }
-        catch (DataAccessException ex) {
+        } catch (DataAccessException ex) {
             throw new ResponseException(ex.getMessage(), 500);
         }
     }
@@ -84,20 +82,20 @@ public class GameService {
                 throw new AlreadyTakenException("Black team already taken.");
             }
             return new GameData(game.gameId(),
-                    game.whiteUsername(),
-                    username,
-                    game.gameName(),
-                    game.game()
+                game.whiteUsername(),
+                username,
+                game.gameName(),
+                game.game()
             );
         }
         if (game.whiteUsername() != null) {
             throw new AlreadyTakenException("White team already taken.");
         }
         return new GameData(game.gameId(),
-                username,
-                game.blackUsername(),
-                game.gameName(),
-                game.game()
+            username,
+            game.blackUsername(),
+            game.gameName(),
+            game.game()
         );
     }
 }

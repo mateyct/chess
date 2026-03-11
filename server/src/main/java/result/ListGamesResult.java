@@ -13,10 +13,10 @@ public class ListGamesResult extends Result {
         this.games = new ArrayList<>();
         for (GameData game : gameList) {
             this.games.add(new GameMetadata(
-                    game.gameId(),
-                    game.whiteUsername(),
-                    game.blackUsername(),
-                    game.gameName()
+                game.gameId(),
+                game.whiteUsername(),
+                game.blackUsername(),
+                game.gameName()
             ));
         }
     }
@@ -26,6 +26,6 @@ public class ListGamesResult extends Result {
     }
 
     public record GameMetadata(int gameID, String whiteUsername, String blackUsername,
-                                String gameName) {
+                               String gameName) {
     }
 }

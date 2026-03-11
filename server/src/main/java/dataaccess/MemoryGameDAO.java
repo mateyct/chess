@@ -21,11 +21,11 @@ public class MemoryGameDAO implements GameDAO {
     public int createGame(GameData gameData) {
         int id = gameCount() + 1;
         gameCollection.add(new GameData(
-                id,
-                gameData.whiteUsername(),
-                gameData.blackUsername(),
-                gameData.gameName(),
-                gameData.game()
+            id,
+            gameData.whiteUsername(),
+            gameData.blackUsername(),
+            gameData.gameName(),
+            gameData.game()
         ));
         return id;
     }

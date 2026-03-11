@@ -31,8 +31,8 @@ public class UserService {
     public RegisterResult register(RegisterRequest request) throws ResponseException {
         try {
             if (StringUtility.checkInvalidString(request.username()) ||
-                    StringUtility.checkInvalidString(request.password()) ||
-                    StringUtility.checkInvalidString(request.email())
+                StringUtility.checkInvalidString(request.password()) ||
+                StringUtility.checkInvalidString(request.email())
             ) {
                 throw new BadRequestException("Incorrect fields, requires: username, password, and email");
             }
@@ -45,8 +45,7 @@ public class UserService {
             userDAO.createUser(newUser);
             AuthData auth = newAuth(request.username());
             return new RegisterResult(auth.username(), auth.authToken());
-        }
-        catch (DataAccessException ex) {
+        } catch (DataAccessException ex) {
             throw new ResponseException(ex.getMessage(), 500);
         }
     }
@@ -54,7 +53,7 @@ public class UserService {
     public LoginResult login(LoginRequest request) throws ResponseException {
         try {
             if (StringUtility.checkInvalidString(request.username()) ||
-                    StringUtility.checkInvalidString(request.password())
+                StringUtility.checkInvalidString(request.password())
             ) {
                 throw new BadRequestException("Incorrect fields, requires: username and password");
             }
@@ -64,8 +63,7 @@ public class UserService {
             }
             AuthData auth = newAuth(user.username());
             return new LoginResult(auth.username(), auth.authToken());
-        }
-        catch (DataAccessException ex) {
+        } catch (DataAccessException ex) {
             throw new ResponseException(ex.getMessage(), 500);
         }
     }
@@ -77,8 +75,7 @@ public class UserService {
             }
             authDAO.removeAuth(request.authToken());
             return new LogoutResult();
-        }
-        catch (DataAccessException ex) {
+        } catch (DataAccessException ex) {
             throw new ResponseException(ex.getMessage(), 500);
         }
     }
@@ -93,8 +90,7 @@ public class UserService {
                 throw new InvalidCredentialsException("Invalid authentication token.");
             }
             return authData.username();
-        }
-        catch (DataAccessException ex) {
+        } catch (DataAccessException ex) {
             throw new ResponseException(ex.getMessage(), 500);
         }
     }

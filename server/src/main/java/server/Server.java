@@ -15,8 +15,7 @@ public class Server {
         // set up database
         try {
             DatabaseManager.createDatabase();
-        }
-        catch (DataAccessException ex) {
+        } catch (DataAccessException ex) {
             throw new RuntimeException("Failed to set up database: " + ex.getMessage());
         }
 

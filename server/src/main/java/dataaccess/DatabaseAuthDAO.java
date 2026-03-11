@@ -33,8 +33,7 @@ public class DatabaseAuthDAO implements AuthDAO {
                     }
                 }
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             throw new DataAccessException("Error getting auth: " + ex.getMessage());
         }
         return null;
@@ -53,20 +52,19 @@ public class DatabaseAuthDAO implements AuthDAO {
     }
 
     private static final String createStatement = """
-        CREATE TABLE IF NOT EXISTS auth (
-            `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-            `token` TEXT NOT NULL,
-            `username` VARCHAR(256) NOT NULL
-        )
-    """;
+            CREATE TABLE IF NOT EXISTS auth (
+                `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+                `token` TEXT NOT NULL,
+                `username` VARCHAR(256) NOT NULL
+            )
+        """;
 
     private void configureDatabase() throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(createStatement)) {
                 preparedStatement.execute();
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             throw new DataAccessException("Unable to configure database for auth." + ex.getMessage(), ex);
         }
     }

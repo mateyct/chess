@@ -3,6 +3,7 @@ package result;
 public class LoginResult extends Result {
     private final String username;
     private final String authToken;
+
     public LoginResult(String username, String authToken) {
         super(null);
         this.username = username;

@@ -7,6 +7,7 @@ public class ResponseException extends Exception {
         super(message);
         this.statusCode = statusCode;
     }
+
     public ResponseException(String message, Throwable ex, int statusCode) {
         super(message, ex);
         this.statusCode = statusCode;

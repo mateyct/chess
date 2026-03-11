@@ -74,7 +74,7 @@ public class DatabaseTests {
         Assertions.assertEquals(game1.getGameID(), createResult.getGameID());
         Assertions.assertEquals(gameName, game1.getGameName(), "Game name changed after restart");
         Assertions.assertEquals(TEST_USER.getUsername(), game1.getWhiteUsername(),
-                "White player username changed after restart");
+            "White player username changed after restart");
 
         //test that we can still log in
         serverFacade.login(TEST_USER);
@@ -114,13 +114,13 @@ public class DatabaseTests {
         loadPropertiesMethod.invoke(obj, fakeDbProperties);
 
         Map<String, Supplier<TestResult>> operations = Map.of(
-                "Clear", () -> serverFacade.clear(),
-                "Register", () -> serverFacade.register(TEST_USER),
-                "Login", () -> serverFacade.login(TEST_USER),
-                "Logout", () -> serverFacade.logout(UUID.randomUUID().toString()),
-                "Create Game", () -> serverFacade.createGame(new TestCreateRequest("inaccessible"), UUID.randomUUID().toString()),
-                "List Games", () -> serverFacade.listGames(UUID.randomUUID().toString()),
-                "Join Game", () -> serverFacade.joinPlayer(new TestJoinRequest(ChessGame.TeamColor.WHITE, 1), UUID.randomUUID().toString())
+            "Clear", () -> serverFacade.clear(),
+            "Register", () -> serverFacade.register(TEST_USER),
+            "Login", () -> serverFacade.login(TEST_USER),
+            "Logout", () -> serverFacade.logout(UUID.randomUUID().toString()),
+            "Create Game", () -> serverFacade.createGame(new TestCreateRequest("inaccessible"), UUID.randomUUID().toString()),
+            "List Games", () -> serverFacade.listGames(UUID.randomUUID().toString()),
+            "Join Game", () -> serverFacade.joinPlayer(new TestJoinRequest(ChessGame.TeamColor.WHITE, 1), UUID.randomUUID().toString())
         );
 
         try {
@@ -129,10 +129,10 @@ public class DatabaseTests {
                 Supplier<TestResult> operation = operationEntry.getValue();
                 TestResult result = operation.get();
                 Assertions.assertEquals(500, serverFacade.getStatusCode(),
-                        "Server response code was not 500 Internal Error for " + operationName);
+                    "Server response code was not 500 Internal Error for " + operationName);
                 Assertions.assertNotNull(result.getMessage(), "Invalid Request didn't return an error message for " + operationName);
                 Assertions.assertTrue(result.getMessage().toLowerCase(Locale.ROOT).contains("error"),
-                        "Error message didn't contain the word \"Error\" for " + operationName);
+                    "Error message didn't contain the word \"Error\" for " + operationName);
             }
         } finally {
             Method loadFromResources = databaseManagerClass.getDeclaredMethod("loadPropertiesFromResources");
@@ -166,7 +166,7 @@ public class DatabaseTests {
                 for (int i = 1; i <= columns; i++) {
                     String value = rs.getString(i);
                     Assertions.assertFalse(value.contains(TEST_USER.getPassword()),
-                            "Found clear text password in database");
+                        "Found clear text password in database");
                 }
             }
         }
@@ -174,10 +174,10 @@ public class DatabaseTests {
 
     private void executeForAllTables(TableAction tableAction) {
         String sql = """
-                    SELECT table_name
-                    FROM information_schema.tables
-                    WHERE table_schema = DATABASE();
-                """;
+                SELECT table_name
+                FROM information_schema.tables
+                WHERE table_schema = DATABASE();
+            """;
 
         try (Connection conn = getConnection(); PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
             try (var resultSet = preparedStatement.executeQuery()) {
@@ -200,7 +200,7 @@ public class DatabaseTests {
     }
 
     private Class<?> findDatabaseManager() throws ClassNotFoundException {
-        if(databaseManagerClass != null) {
+        if (databaseManagerClass != null) {
             return databaseManagerClass;
         }
 
@@ -210,11 +210,12 @@ public class DatabaseTests {
                 clazz.getDeclaredMethod("getConnection");
                 databaseManagerClass = clazz;
                 return clazz;
-            } catch (ReflectiveOperationException ignored) {}
+            } catch (ReflectiveOperationException ignored) {
+            }
         }
         throw new ClassNotFoundException("Unable to load database in order to verify persistence. " +
-                "Are you using DatabaseManager to set your credentials? " +
-                "Did you edit the signature of the getConnection method?");
+            "Are you using DatabaseManager to set your credentials? " +
+            "Did you edit the signature of the getConnection method?");
     }
 
     @FunctionalInterface

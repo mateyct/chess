@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AuthDAOTest {
     AuthDAO dao;
+
     @BeforeAll
     static void init() {
         assertDoesNotThrow(DatabaseManager::createDatabase);
@@ -37,8 +38,7 @@ public class AuthDAOTest {
                 ps.setString(2, token);
                 ps.execute();
             }
-        }
-        catch (SQLException | DataAccessException e) {
+        } catch (SQLException | DataAccessException e) {
             fail("Error occurred setting up data in database");
         }
     }
@@ -132,8 +132,7 @@ public class AuthDAOTest {
                     return rs.getInt(1);
                 }
             }
-        }
-        catch (DataAccessException | SQLException e) {
+        } catch (DataAccessException | SQLException e) {
             fail("Error interacting with the database");
         }
         return -1;

@@ -37,20 +37,20 @@ public class GameDAOTest {
     }
 
     private int insertGame(
-            String gameName,
-            String whiteUsername,
-            String blackUsername,
-            ChessGame game
+        String gameName,
+        String whiteUsername,
+        String blackUsername,
+        ChessGame game
     ) {
         try {
             String statement = "INSERT INTO game (blackUsername, whiteUsername, gameName, game)" +
-                    "VALUES (?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?)";
             return DatabaseManager.executeUpdate(
-                    statement,
-                    blackUsername,
-                    whiteUsername,
-                    gameName,
-                    gson.toJson(game)
+                statement,
+                blackUsername,
+                whiteUsername,
+                gameName,
+                gson.toJson(game)
             );
         } catch (DataAccessException e) {
             fail("Error occurred setting up data in database");
@@ -92,11 +92,11 @@ public class GameDAOTest {
             GameData dbGame = dao.getGame(1);
             assertNull(dbGame);
             dao.createGame(new GameData(
-                    1,
-                    whiteUsername,
-                    blackUsername,
-                    testName,
-                    game
+                1,
+                whiteUsername,
+                blackUsername,
+                testName,
+                game
             ));
             dbGame = dao.getGame(1);
             assertEquals(testName, dbGame.gameName());
@@ -133,18 +133,18 @@ public class GameDAOTest {
     @Test
     void testListGames() {
         GameData game1 = new GameData(
-                1,
-                "white1",
-                "black1",
-                "game1",
-                new ChessGame()
+            1,
+            "white1",
+            "black1",
+            "game1",
+            new ChessGame()
         );
         GameData game2 = new GameData(
-                2,
-                "white2",
-                "black2",
-                "game2",
-                new ChessGame()
+            2,
+            "white2",
+            "black2",
+            "game2",
+            new ChessGame()
         );
         assertDoesNotThrow(() -> {
             dao.createGame(game1);
@@ -165,25 +165,25 @@ public class GameDAOTest {
     @Test
     void testUpdateGame() {
         GameData game = new GameData(
-                1,
-                "white1",
-                "black1",
-                "game1",
-                new ChessGame()
+            1,
+            "white1",
+            "black1",
+            "game1",
+            new ChessGame()
         );
         ChessMove move = new ChessMove(
-                new ChessPosition(2, 1),
-                new ChessPosition(3, 1),
-                null
+            new ChessPosition(2, 1),
+            new ChessPosition(3, 1),
+            null
         );
         assertDoesNotThrow(() -> {
             int id = dao.createGame(game);
             GameData newGame = new GameData(
-                    id,
-                    "new white 1",
-                    game.blackUsername(),
-                    "game1",
-                    new ChessGame()
+                id,
+                "new white 1",
+                game.blackUsername(),
+                "game1",
+                new ChessGame()
             );
             newGame.game().makeMove(move);
             GameData dbGame = dao.getGame(id);
@@ -197,11 +197,11 @@ public class GameDAOTest {
     @Test
     void testUpdateGameInvalidInput() {
         GameData game = new GameData(
-                1,
-                "white1",
-                "black1",
-                "game1",
-                new ChessGame()
+            1,
+            "white1",
+            "black1",
+            "game1",
+            new ChessGame()
         );
         assertThrows(DataAccessException.class, () -> {
             int id = dao.createGame(game);
@@ -225,8 +225,7 @@ public class GameDAOTest {
                     return rs.getInt(1);
                 }
             }
-        }
-        catch (DataAccessException | SQLException e) {
+        } catch (DataAccessException | SQLException e) {
             fail("Error interacting with the database");
         }
         return -1;
@@ -235,18 +234,18 @@ public class GameDAOTest {
     @Test
     void testClear() {
         GameData game1 = new GameData(
-                1,
-                "white1",
-                "black1",
-                "game1",
-                new ChessGame()
+            1,
+            "white1",
+            "black1",
+            "game1",
+            new ChessGame()
         );
         GameData game2 = new GameData(
-                2,
-                "white2",
-                "black2",
-                "game2",
-                new ChessGame()
+            2,
+            "white2",
+            "black2",
+            "game2",
+            new ChessGame()
         );
         assertDoesNotThrow(() -> {
             assertEquals(0, getTableSize());

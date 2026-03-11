@@ -97,8 +97,7 @@ public class DatabaseManager {
 
                 return 0;
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             throw new DataAccessException("Error while executing database update: " + ex.getMessage());
         }
     }

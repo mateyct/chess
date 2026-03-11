@@ -40,29 +40,27 @@ public class DatabaseUserDAO implements UserDAO {
                     }
                 }
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             throw new DataAccessException("Unable to configure database for users.", ex);
         }
         return null;
     }
 
     private static final String createStatement = """
-            CREATE TABLE IF NOT EXISTS user (
-                `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-                `username` VARCHAR(256) UNIQUE NOT NULL,
-                `password` TEXT NOT NULL,
-                `email` VARCHAR(256) NOT NULL
-            )
-            """;
+        CREATE TABLE IF NOT EXISTS user (
+            `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+            `username` VARCHAR(256) UNIQUE NOT NULL,
+            `password` TEXT NOT NULL,
+            `email` VARCHAR(256) NOT NULL
+        )
+        """;
 
     private void configureDatabase() throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(createStatement)) {
                 preparedStatement.execute();
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             throw new DataAccessException("Unable to configure database for users." + ex.getMessage(), ex);
         }
     }
