@@ -1,6 +1,11 @@
 package client;
 
+import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
+
+import java.util.Map;
 
 import static ui.EscapeSequences.*;
 
@@ -18,12 +23,37 @@ public class ClientChessBoard {
         EMPTY
     };
 
+    private static final Map<ChessPiece.PieceType, String> blackPieceMap = Map.of(
+        ChessPiece.PieceType.KING, BLACK_KING,
+        ChessPiece.PieceType.QUEEN, BLACK_QUEEN,
+        ChessPiece.PieceType.ROOK, BLACK_ROOK,
+        ChessPiece.PieceType.KNIGHT, BLACK_KNIGHT,
+        ChessPiece.PieceType.BISHOP, BLACK_BISHOP,
+        ChessPiece.PieceType.PAWN, BLACK_PAWN
+    );
+
+    private static final Map<ChessPiece.PieceType, String> whitePieceMap = Map.of(
+        ChessPiece.PieceType.KING, WHITE_KING,
+        ChessPiece.PieceType.QUEEN, WHITE_QUEEN,
+        ChessPiece.PieceType.ROOK, WHITE_ROOK,
+        ChessPiece.PieceType.KNIGHT, WHITE_KNIGHT,
+        ChessPiece.PieceType.BISHOP, WHITE_BISHOP,
+        ChessPiece.PieceType.PAWN, WHITE_PAWN
+    );
+
     public ClientChessBoard() {
 
     }
 
-    public void draw(ChessGame chessGame, boolean reversed) {
+    public void draw(ChessBoard board, boolean reversed) {
         drawAbc(reversed);
+        int increment = reversed ? 1 : -1;
+        int start = reversed ? 1  : 8;
+        for (int i = start; i >= 1 && i <= 8; i += increment) {
+            drawChessRow(i, board, reversed);
+        }
+        drawAbc(reversed);
+        System.out.println(RESET_BG_COLOR + RESET_TEXT_COLOR);
     }
 
     private void drawAbc(boolean reversed) {
@@ -33,6 +63,36 @@ public class ClientChessBoard {
         for (int i = start; i >= 0 && i < letters.length; i += increment) {
             stringBuilder.append(letters[i]);
         }
-        System.out.println(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + stringBuilder);
+        System.out.println(SET_BG_COLOR_DARK_GREEN + SET_TEXT_COLOR_YELLOW + stringBuilder + RESET_BG_COLOR);
+    }
+
+    private void drawChessRow(int rowNum, ChessBoard board, boolean reversed) {
+        String border = SET_BG_COLOR_DARK_GREEN + SET_TEXT_COLOR_YELLOW + " " + rowNum + " " + RESET_BG_COLOR;
+        StringBuilder builder = new StringBuilder(border);
+        int increment = reversed ? -1 : 1;
+        int start = reversed ? 8  : 1;
+        for (int i = start; i >= 1 && i <= 8; i += increment) {
+            if ((rowNum + i) % 2 == 1) {
+                builder.append(SET_BG_COLOR_BLUE);
+            }
+            else {
+                builder.append(SET_BG_COLOR_LIGHT_GREY);
+            }
+            ChessPosition position = new ChessPosition(rowNum, i);
+            String pieceString = getPieceString(board.getPiece(position));
+            builder.append(pieceString);
+        }
+        builder.append(border);
+        System.out.println(builder);
+    }
+
+    private String getPieceString(ChessPiece piece) {
+        if (piece == null) {
+            return EMPTY;
+        }
+        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+            return whitePieceMap.get(piece.getPieceType());
+        }
+        return blackPieceMap.get(piece.getPieceType());
     }
 }
