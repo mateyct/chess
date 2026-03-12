@@ -8,7 +8,6 @@ import model.UserData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import request.*;
 import result.LoginResult;
 import result.RegisterResult;
 

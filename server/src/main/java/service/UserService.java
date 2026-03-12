@@ -10,13 +10,11 @@ import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
-import request.*;
 import result.LoginResult;
 import result.LogoutResult;
 import result.RegisterResult;
 import util.StringUtility;
 
-import javax.xml.crypto.Data;
 import java.util.UUID;
 
 public class UserService {
