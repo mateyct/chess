@@ -13,6 +13,9 @@ import org.mindrot.jbcrypt.BCrypt;
 import result.LoginResult;
 import result.LogoutResult;
 import result.RegisterResult;
+import request.RegisterRequest;
+import request.LogoutRequest;
+import request.LoginRequest;
 import util.StringUtility;
 
 import java.util.UUID;
