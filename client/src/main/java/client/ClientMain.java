@@ -18,14 +18,46 @@ public class ClientMain {
     }
 
     private void loggedOutLoop() {
-        System.out.println(
-            """
+        boolean loop = true;
+        while (loop) {
+            String prompt = """
                 1: Login
                 2: Register
                 3: Help
-                4: Quit"""
-        );
+                4: Quit""";
+            switch (getIntInput(prompt, 4)) {
+                case 1 -> {
+                    System.out.println("Login");
+                }
+                case 2 -> {
+                    System.out.println("Register");
+                }
+                case 3 -> {
+                    System.out.println(prompt);
+                }
+                case 4 -> {
+                    System.out.println("Goodbye!");
+                    loop = false;
+                }
+            }
+        }
+    }
 
+    private int getIntInput(String prompt, int range) {
+        System.out.println(prompt);
+        int choice = 0;
+        while (true) {
+            try {
+                String input = scan.nextLine().strip();
+                choice = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                choice = 0;
+            }
+            if (choice >= 1 && choice <= range) {
+                return choice;
+            }
+            System.out.println("Invalid choice provided. Please choose a valid option");
+        }
     }
 
     private static void drawTestBoard() {
