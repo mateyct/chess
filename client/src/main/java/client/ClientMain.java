@@ -1,6 +1,7 @@
 package client;
 
 import chess.*;
+import ui.EscapeSequences;
 
 import java.util.Scanner;
 
@@ -15,6 +16,10 @@ public class ClientMain {
     public ClientMain() {
         scan = new Scanner(System.in);
         System.out.println("Welcome! It's time to play chess.");
+    }
+
+    private void clearPrint(String string) {
+        System.out.println(EscapeSequences.ERASE_SCREEN + string);
     }
 
     private void loggedOutLoop() {
@@ -33,7 +38,14 @@ public class ClientMain {
                     System.out.println("Register");
                 }
                 case 3 -> {
-                    System.out.println(prompt);
+                    String help = """
+                        ----Help-------------------------------------
+                        |  Login - login to the chess server account |
+                        |  Register - create chess server account    |
+                        |  Help - print help dialogue                |
+                        |  Quit - exit the program                   |
+                        ---------------------------------------------""";
+                    clearPrint(help);
                 }
                 case 4 -> {
                     System.out.println("Goodbye!");
@@ -45,7 +57,7 @@ public class ClientMain {
 
     private int getIntInput(String prompt, int range) {
         System.out.println(prompt);
-        int choice = 0;
+        int choice;
         while (true) {
             try {
                 String input = scan.nextLine().strip();
