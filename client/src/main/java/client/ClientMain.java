@@ -5,8 +5,7 @@ import request.CreateGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.CreateGameResult;
-import result.LoginResult;
-import result.RegisterResult;
+import result.ListGamesResult;
 import server.ServerFacade;
 import ui.EscapeSequences;
 
@@ -93,7 +92,7 @@ public class ClientMain {
                 createGame();
             }
             case 2 -> {
-                System.out.println("List all games");
+                listGames();
             }
             case 3 -> {
                 System.out.println("Join game");
@@ -138,6 +137,21 @@ public class ClientMain {
         CreateGameResult result = serverFacade.createGame(request);
         System.out.println("Game successfully created.");
         System.out.println("Game ID: " + result.getGameID());
+    }
+
+    private void listGames() {
+        ListGamesResult result = serverFacade.listGames();
+        StringBuilder listString = new StringBuilder();
+        for (ListGamesResult.GameMetadata data : result.getGames()) {
+            listString.append("ID: ").append(data.gameID()).append("; ");
+            listString.append("Game Name: ").append(data.gameName()).append("; ");
+            String whiteUsername = data.whiteUsername() == null ? "[EMPTY]" : data.whiteUsername();
+            String blackUsername = data.blackUsername() == null ? "[EMPTY]" : data.blackUsername();
+            listString.append("White Username: ").append(whiteUsername).append("; ");
+            listString.append("Black Username: ").append(blackUsername).append("; ");
+            listString.append("\n");
+        }
+        System.out.println(listString);
     }
 
     private int getIntInput(String prompt, int range) {

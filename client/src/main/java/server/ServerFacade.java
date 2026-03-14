@@ -39,7 +39,7 @@ public class ServerFacade {
         }
         ArrayList<GameData> games = new ArrayList<>();
         games.add(new GameData(
-            3,
+            2,
             "Dave",
             "Mark",
             "Coolest Game",
