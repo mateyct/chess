@@ -38,7 +38,7 @@ public class ClientMain {
         boolean loop = true;
         while (loop) {
             if (serverFacade.signedIn()) {
-
+                loggedInLoop();
             }
             else {
                 loop = loggedOutLoop();

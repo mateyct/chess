@@ -69,6 +69,6 @@ public class ServerFacade {
     }
 
     public boolean signedIn() {
-        return authToken != null && authToken.isEmpty();
+        return authToken != null && !authToken.isEmpty();
     }
 }
