@@ -142,14 +142,16 @@ public class ClientMain {
     private void listGames() {
         ListGamesResult result = serverFacade.listGames();
         StringBuilder listString = new StringBuilder();
+        int i = 1;
         for (ListGamesResult.GameMetadata data : result.getGames()) {
-            listString.append("ID: ").append(data.gameID()).append("; ");
+            listString.append("ID: ").append(i).append("; ");
             listString.append("Game Name: ").append(data.gameName()).append("; ");
             String whiteUsername = data.whiteUsername() == null ? "[EMPTY]" : data.whiteUsername();
             String blackUsername = data.blackUsername() == null ? "[EMPTY]" : data.blackUsername();
             listString.append("White Username: ").append(whiteUsername).append("; ");
             listString.append("Black Username: ").append(blackUsername).append("; ");
             listString.append("\n");
+            i++;
         }
         System.out.println(listString);
     }
