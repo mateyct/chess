@@ -1,8 +1,10 @@
 package client;
 
 import chess.*;
+import request.CreateGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
+import result.CreateGameResult;
 import result.LoginResult;
 import result.RegisterResult;
 import server.ServerFacade;
@@ -88,7 +90,7 @@ public class ClientMain {
             6: Logout""";
         switch (getIntInput(prompt, 6)) {
             case 1 -> {
-                System.out.println("Created game");
+                createGame();
             }
             case 2 -> {
                 System.out.println("List all games");
@@ -128,6 +130,14 @@ public class ClientMain {
         String password = getStringInput("Input password: ");
         String email = getStringInput("Input email: ");
         serverFacade.register(new RegisterRequest(username, password, email));
+    }
+
+    private void createGame() {
+        String gameName = getStringInput("Input game name");
+        CreateGameRequest request = new CreateGameRequest(gameName);
+        CreateGameResult result = serverFacade.createGame(request);
+        System.out.println("Game successfully created.");
+        System.out.println("Game ID: " + result.getGameID());
     }
 
     private int getIntInput(String prompt, int range) {
