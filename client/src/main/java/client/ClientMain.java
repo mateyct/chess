@@ -72,6 +72,17 @@ public class ClientMain {
         }
     }
 
+    private String getStringInput(String prompt) {
+        System.out.println(prompt);
+        while (true) {
+            String input = scan.nextLine();
+            if (!input.isEmpty()) {
+                return input;
+            }
+            System.out.println("Input cannot be empty.");
+        }
+    }
+
     private static void drawTestBoard() {
         ClientChessBoard board = new ClientChessBoard();
         ChessGame game = new ChessGame();
