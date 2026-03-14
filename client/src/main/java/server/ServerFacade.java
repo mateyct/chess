@@ -27,13 +27,13 @@ public class ServerFacade {
     }
 
     public void logout() {
-        if (authToken.isEmpty()) {
+        if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
     }
 
     public ListGamesResult listGames() {
-        if (authToken.isEmpty()) {
+        if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
         ArrayList<GameData> games = new ArrayList<>();
@@ -55,15 +55,19 @@ public class ServerFacade {
     }
 
     public CreateGameResult createGame(CreateGameRequest request) {
-        if (authToken.isEmpty()) {
+        if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
         return new CreateGameResult(1);
     }
 
     public void joinGame(JoinGameRequest request) {
-        if (authToken.isEmpty()) {
+        if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
+    }
+
+    public boolean signedIn() {
+        return authToken != null && authToken.isEmpty();
     }
 }

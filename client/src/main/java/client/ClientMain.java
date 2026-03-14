@@ -16,7 +16,7 @@ public class ClientMain {
 
     public static void main(String[] args) {
         ClientMain client = new ClientMain();
-        client.loggedOutLoop();
+        client.mainLoop();
         client.closeScanner();
     }
 
@@ -34,52 +34,61 @@ public class ClientMain {
         System.out.println(EscapeSequences.ERASE_SCREEN + string);
     }
 
-    private void loggedOutLoop() {
+    private void mainLoop() {
         boolean loop = true;
         while (loop) {
-            String prompt = """
-                1: Login
-                2: Register
-                3: Help
-                4: Quit""";
-            switch (getIntInput(prompt, 4)) {
-                case 1 -> {
-                    login();
-                }
-                case 2 -> {
-                    register();
-                }
-                case 3 -> {
-                    String help = """
-                        ----Help-------------------------------------
-                        |  Login - login to the chess server account |
-                        |  Register - create chess server account    |
-                        |  Help - print help dialogue                |
-                        |  Quit - exit the program                   |
-                        ---------------------------------------------""";
-                    clearPrint(help);
-                }
-                case 4 -> {
-                    System.out.println("Goodbye!");
-                    loop = false;
-                }
+            if (serverFacade.signedIn()) {
+
+            }
+            else {
+                loop = loggedOutLoop();
             }
         }
+        System.out.println("Goodbye!");
     }
 
-    private boolean login() {
+    private boolean loggedOutLoop() {
+        boolean loop = true;
+        String prompt = """
+            1: Login
+            2: Register
+            3: Help
+            4: Quit""";
+        switch (getIntInput(prompt, 4)) {
+            case 1 -> {
+                login();
+            }
+            case 2 -> {
+                register();
+            }
+            case 3 -> {
+                String help = """
+                    ----Help-------------------------------------
+                    |  Login - login to the chess server account |
+                    |  Register - create chess server account    |
+                    |  Help - print help dialogue                |
+                    |  Quit - exit the program                   |
+                    ---------------------------------------------""";
+                clearPrint(help);
+            }
+            case 4 -> {
+                loop = false;
+            }
+        }
+        return loop;
+    }
+
+    private void login() {
         String username = getStringInput("Input username: ");
         String password = getStringInput("Input password: ");
-        LoginResult result = serverFacade.login(new LoginRequest(username, password));
-        return result.getAuthToken() != null && !result.getAuthToken().isEmpty();
+        serverFacade.login(new LoginRequest(username, password));
     }
 
-    private boolean register() {
+    private void register() {
         String username = getStringInput("Input username: ");
         String password = getStringInput("Input password: ");
         String email = getStringInput("Input email: ");
-        RegisterResult result = serverFacade.register(new RegisterRequest(username, password, email));
-        return result.getAuthToken() != null && !result.getAuthToken().isEmpty();
+        serverFacade.register(new RegisterRequest(username, password, email));
     }
 
     private int getIntInput(String prompt, int range) {
