@@ -30,6 +30,7 @@ public class ServerFacade {
         if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
+        authToken = null;
     }
 
     public ListGamesResult listGames() {

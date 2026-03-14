@@ -78,6 +78,45 @@ public class ClientMain {
         return loop;
     }
 
+    private void loggedInLoop() {
+        String prompt = """
+            1: Create Game
+            2: List Games
+            3: Join Game
+            4: Observe Game
+            5: Help
+            6: Logout""";
+        switch (getIntInput(prompt, 6)) {
+            case 1 -> {
+                System.out.println("Created game");
+            }
+            case 2 -> {
+                System.out.println("List all games");
+            }
+            case 3 -> {
+                System.out.println("Join game");
+            }
+            case 4 -> {
+                System.out.println("Observe game");
+            }
+            case 5 -> {
+                String help = """
+                    ----Help-------------------------------------
+                    |  Create Game - create a new chess game     |
+                    |  List Game - get a list of all games       |
+                    |  Join Game - join an existing game         |
+                    |  Observe - watch a current game            |
+                    |  Help - print help dialogue                |
+                    |  Logout - logout from your account         |
+                    ---------------------------------------------""";
+                clearPrint(help);
+            }
+            case 6 -> {
+                serverFacade.logout();
+            }
+        }
+    }
+
     private void login() {
         String username = getStringInput("Input username: ");
         String password = getStringInput("Input password: ");
