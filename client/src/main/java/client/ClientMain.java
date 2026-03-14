@@ -1,21 +1,33 @@
 package client;
 
 import chess.*;
+import request.LoginRequest;
+import request.RegisterRequest;
+import result.LoginResult;
+import result.RegisterResult;
+import server.ServerFacade;
 import ui.EscapeSequences;
 
 import java.util.Scanner;
 
 public class ClientMain {
-    private Scanner scan;
+    private final Scanner scan;
+    private final ServerFacade serverFacade;
 
     public static void main(String[] args) {
         ClientMain client = new ClientMain();
         client.loggedOutLoop();
+        client.closeScanner();
     }
 
     public ClientMain() {
         scan = new Scanner(System.in);
+        serverFacade = new ServerFacade(0);
         System.out.println("Welcome! It's time to play chess.");
+    }
+
+    public void closeScanner() {
+        scan.close();
     }
 
     private void clearPrint(String string) {
@@ -32,10 +44,10 @@ public class ClientMain {
                 4: Quit""";
             switch (getIntInput(prompt, 4)) {
                 case 1 -> {
-                    System.out.println("Login");
+                    login();
                 }
                 case 2 -> {
-                    System.out.println("Register");
+                    register();
                 }
                 case 3 -> {
                     String help = """
@@ -53,6 +65,21 @@ public class ClientMain {
                 }
             }
         }
+    }
+
+    private boolean login() {
+        String username = getStringInput("Input username: ");
+        String password = getStringInput("Input password: ");
+        LoginResult result = serverFacade.login(new LoginRequest(username, password));
+        return result.getAuthToken() != null && !result.getAuthToken().isEmpty();
+    }
+
+    private boolean register() {
+        String username = getStringInput("Input username: ");
+        String password = getStringInput("Input password: ");
+        String email = getStringInput("Input email: ");
+        RegisterResult result = serverFacade.register(new RegisterRequest(username, password, email));
+        return result.getAuthToken() != null && !result.getAuthToken().isEmpty();
     }
 
     private int getIntInput(String prompt, int range) {
