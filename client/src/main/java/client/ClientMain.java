@@ -98,7 +98,7 @@ public class ClientMain {
                 joinGame();
             }
             case 4 -> {
-                System.out.println("Observe game");
+                observeGame();
             }
             case 5 -> {
                 String help = """
@@ -173,6 +173,11 @@ public class ClientMain {
             2);
         String color = colorChoice == 1 ? "WHITE" : "BLACK";
         serverFacade.joinGame(gameID, color);
+        drawTestBoard();
+    }
+
+    private void observeGame() {
+        drawTestBoard();
     }
 
     private int getIntInput(String prompt, int range) {
@@ -217,6 +222,5 @@ public class ClientMain {
             System.out.println("That's unfortunate.");
         }
         board.draw(game.getBoard(), false);
-        board.draw(game.getBoard(), true);
     }
 }
