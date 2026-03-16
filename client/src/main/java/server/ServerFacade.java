@@ -1,6 +1,7 @@
 package server;
 
 import chess.ChessGame;
+import exception.ResponseException;
 import model.GameData;
 import request.*;
 import result.*;
@@ -20,22 +21,22 @@ public class ServerFacade {
         this.port = port;
     }
 
-    public void login(LoginRequest request) {
+    public void login(LoginRequest request) throws ResponseException {
         authToken = request.password() + request.hashCode();
     }
 
-    public void register(RegisterRequest request) {
+    public void register(RegisterRequest request) throws ResponseException {
         authToken = request.password() + request.email();
     }
 
-    public void logout() {
+    public void logout() throws ResponseException {
         if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
         authToken = null;
     }
 
-    public ListGamesResult listGames() {
+    public ListGamesResult listGames() throws ResponseException {
         if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
@@ -62,14 +63,14 @@ public class ServerFacade {
         return new ListGamesResult(games);
     }
 
-    public CreateGameResult createGame(CreateGameRequest request) {
+    public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {
         if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
         return new CreateGameResult(1);
     }
 
-    public void joinGame(int gameID, String playerColor) {
+    public void joinGame(int gameID, String playerColor) throws ResponseException {
         if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }

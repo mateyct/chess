@@ -1,6 +1,7 @@
 package client;
 
 import chess.*;
+import exception.ResponseException;
 import request.CreateGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
@@ -38,17 +39,20 @@ public class ClientMain {
     private void mainLoop() {
         boolean loop = true;
         while (loop) {
-            if (serverFacade.signedIn()) {
-                loggedInLoop();
-            }
-            else {
-                loop = loggedOutLoop();
+            try {
+                if (serverFacade.signedIn()) {
+                    loggedInLoop();
+                } else {
+                    loop = loggedOutLoop();
+                }
+            } catch (ResponseException e) {
+                System.out.println(e.getMessage());
             }
         }
         System.out.println("Goodbye!");
     }
 
-    private boolean loggedOutLoop() {
+    private boolean loggedOutLoop() throws ResponseException {
         boolean loop = true;
         String prompt = """
             1: Login
@@ -79,7 +83,7 @@ public class ClientMain {
         return loop;
     }
 
-    private void loggedInLoop() {
+    private void loggedInLoop() throws ResponseException {
         String prompt = """
             1: Create Game
             2: List Games
@@ -118,20 +122,20 @@ public class ClientMain {
         }
     }
 
-    private void login() {
+    private void login() throws ResponseException {
         String username = getStringInput("Input username: ");
         String password = getStringInput("Input password: ");
         serverFacade.login(new LoginRequest(username, password));
     }
 
-    private void register() {
+    private void register() throws ResponseException {
         String username = getStringInput("Input username: ");
         String password = getStringInput("Input password: ");
         String email = getStringInput("Input email: ");
         serverFacade.register(new RegisterRequest(username, password, email));
     }
 
-    private void createGame() {
+    private void createGame() throws ResponseException {
         String gameName = getStringInput("Input game name");
         CreateGameRequest request = new CreateGameRequest(gameName);
         CreateGameResult result = serverFacade.createGame(request);
@@ -139,7 +143,7 @@ public class ClientMain {
         System.out.println("Game ID: " + result.getGameID());
     }
 
-    private void listGames() {
+    private void listGames() throws ResponseException {
         ListGamesResult result = serverFacade.listGames();
         StringBuilder listString = new StringBuilder();
         int i = 1;
@@ -156,7 +160,7 @@ public class ClientMain {
         System.out.println(listString);
     }
 
-    private void joinGame() {
+    private void joinGame() throws ResponseException {
         int gameCount = serverFacade.getGameCount();
         if (gameCount == 0) {
             System.out.println("Please list games before joining.");
@@ -176,7 +180,7 @@ public class ClientMain {
         drawTestBoard();
     }
 
-    private void observeGame() {
+    private void observeGame() throws ResponseException {
         drawTestBoard();
     }
 
