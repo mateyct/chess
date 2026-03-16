@@ -12,6 +12,7 @@ import java.util.Map;
 public class ServerFacade {
     // methods are currently stubbed
     private String authToken;
+    private String username;
     private int port;
     private Map<Integer, Integer> gameIDMap;
 
@@ -70,11 +71,18 @@ public class ServerFacade {
         return new CreateGameResult(1);
     }
 
-    public boolean joinGame(JoinGameRequest request) {
+    public boolean joinGame(int gameID, String playerColor) {
         if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
         return gameIDMap != null;
+    }
+
+    public int getGameCount() {
+        if (gameIDMap == null) {
+            return 0;
+        }
+        return gameIDMap.size();
     }
 
     public boolean signedIn() {

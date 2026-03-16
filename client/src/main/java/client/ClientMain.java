@@ -2,6 +2,7 @@ package client;
 
 import chess.*;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.CreateGameResult;
@@ -95,7 +96,7 @@ public class ClientMain {
                 listGames();
             }
             case 3 -> {
-                System.out.println("Join game");
+                joinGame();
             }
             case 4 -> {
                 System.out.println("Observe game");
@@ -154,6 +155,25 @@ public class ClientMain {
             i++;
         }
         System.out.println(listString);
+    }
+
+    private void joinGame() {
+        int gameCount = serverFacade.getGameCount();
+        if (gameCount == 0) {
+            System.out.println("Please list games before joining.");
+            return;
+        }
+        int gameID = getIntInput(
+            "Enter gameID of the game you want to play:",
+            gameCount
+        );
+        int colorChoice = getIntInput("""
+            Which color do you want to play?:
+            1. WHITE
+            2. BLACK""",
+            2);
+        String color = colorChoice == 1 ? "WHITE" : "BLACK";
+        serverFacade.joinGame(gameID, color);
     }
 
     private int getIntInput(String prompt, int range) {
