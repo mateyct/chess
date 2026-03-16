@@ -2,7 +2,6 @@ package client;
 
 import chess.*;
 import request.CreateGameRequest;
-import request.JoinGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.CreateGameResult;

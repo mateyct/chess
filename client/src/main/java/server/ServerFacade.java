@@ -20,14 +20,12 @@ public class ServerFacade {
         this.port = port;
     }
 
-    public LoginResult login(LoginRequest request) {
+    public void login(LoginRequest request) {
         authToken = request.password() + request.hashCode();
-        return new LoginResult(request.username(), request.password() + request.hashCode());
     }
 
-    public RegisterResult register(RegisterRequest request) {
+    public void register(RegisterRequest request) {
         authToken = request.password() + request.email();
-        return new RegisterResult(request.username(), request.password() + request.email());
     }
 
     public void logout() {
@@ -71,11 +69,10 @@ public class ServerFacade {
         return new CreateGameResult(1);
     }
 
-    public boolean joinGame(int gameID, String playerColor) {
+    public void joinGame(int gameID, String playerColor) {
         if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
-        return gameIDMap != null;
     }
 
     public int getGameCount() {
