@@ -8,6 +8,7 @@ import request.RegisterRequest;
 import result.CreateGameResult;
 import result.ListGamesResult;
 import server.ServerFacade;
+import ui.ClientChessBoard;
 import ui.EscapeSequences;
 
 import java.util.Scanner;

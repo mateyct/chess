@@ -1,4 +1,4 @@
-package client;
+package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
