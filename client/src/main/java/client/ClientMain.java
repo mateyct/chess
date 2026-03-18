@@ -5,7 +5,6 @@ import exception.ResponseException;
 import request.CreateGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
-import result.CreateGameResult;
 import result.ListGamesResult;
 import server.ServerFacade;
 import ui.ClientChessBoard;
@@ -139,7 +138,7 @@ public class ClientMain {
     private void createGame() throws ResponseException {
         String gameName = getStringInput("Input game name");
         CreateGameRequest request = new CreateGameRequest(gameName);
-        CreateGameResult result = serverFacade.createGame(request);
+        serverFacade.createGame(request);
         System.out.println("Game successfully created.");
     }
 
@@ -157,7 +156,7 @@ public class ClientMain {
             listString.append("\n");
             i++;
         }
-        System.out.println(listString);
+        clearPrint(listString.toString());
     }
 
     private void joinGame() throws ResponseException {

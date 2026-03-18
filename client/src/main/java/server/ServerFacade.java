@@ -51,6 +51,7 @@ public class ServerFacade {
         int i = 1;
         for (ListGamesResult.GameMetadata game : gameList.getGames()) {
             gameIDMap.put(i, game.gameID());
+            i++;
         }
         return gameList;
     }
