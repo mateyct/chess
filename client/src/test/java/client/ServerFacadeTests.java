@@ -2,10 +2,8 @@ package client;
 
 import exception.ResponseException;
 import org.junit.jupiter.api.*;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
-import result.LoginResult;
+import request.*;
+import result.CreateGameResult;
 import server.Server;
 import server.ServerFacade;
 
@@ -136,6 +134,74 @@ public class ServerFacadeTests {
         assertThrows(ResponseException.class, () -> {
             var games = facade.listGames();
             assertEquals(0, games.getGames().size());
+        });
+    }
+
+    @Test
+    void testCreateGameValid() {
+        RegisterRequest request = new RegisterRequest("User", "Pass", "Email");
+        assertFalse(facade.signedIn());
+        assertDoesNotThrow(() -> {
+            facade.register(request);
+        });
+        assertTrue(facade.signedIn());
+        CreateGameRequest createGameRequest = new CreateGameRequest("Epic Game");
+        assertDoesNotThrow(() -> {
+            CreateGameResult result = facade.createGame(createGameRequest);
+            assertTrue(result.getGameID() > 0);
+        });
+    }
+
+    @Test
+    void testCreateGameInvalid() {
+        RegisterRequest request = new RegisterRequest("User", "Pass", "Email");
+        assertFalse(facade.signedIn());
+        assertDoesNotThrow(() -> {
+            facade.register(request);
+        });
+        assertTrue(facade.signedIn());
+        CreateGameRequest createGameRequest = new CreateGameRequest(null);
+        assertThrows(ResponseException.class, () -> {
+            facade.createGame(createGameRequest);
+        });
+    }
+
+    @Test
+    void testJoinGameValid() {
+        RegisterRequest request = new RegisterRequest("User", "Pass", "Email");
+        assertFalse(facade.signedIn());
+        assertDoesNotThrow(() -> {
+            facade.register(request);
+        });
+        assertTrue(facade.signedIn());
+        CreateGameRequest createGameRequest = new CreateGameRequest("Epic Game");
+        assertDoesNotThrow(() -> {
+            CreateGameResult result = facade.createGame(createGameRequest);
+            assertTrue(result.getGameID() > 0);
+        });
+        assertDoesNotThrow(() -> {
+            facade.joinGame(1, "WHITE");
+        });
+    }
+
+    @Test
+    void testJoinGameInvalid() {
+        RegisterRequest request = new RegisterRequest("User", "Pass", "Email");
+        assertFalse(facade.signedIn());
+        assertDoesNotThrow(() -> {
+            facade.register(request);
+        });
+        assertTrue(facade.signedIn());
+        CreateGameRequest createGameRequest = new CreateGameRequest("Epic Game");
+        assertDoesNotThrow(() -> {
+            CreateGameResult result = facade.createGame(createGameRequest);
+            assertTrue(result.getGameID() > 0);
+        });
+        assertDoesNotThrow(() -> {
+            facade.joinGame(1, "WHITE");
+        });
+        assertThrows(ResponseException.class, () -> {
+            facade.joinGame(1, "WHITE");
         });
     }
 
