@@ -10,7 +10,7 @@ import java.util.Map;
 import static ui.EscapeSequences.*;
 
 public class ClientChessBoard {
-    private static final String[] letters = {
+    private static final String[] LETTERS = {
         EMPTY,
         " a ",
         " b ",
@@ -23,7 +23,7 @@ public class ClientChessBoard {
         EMPTY
     };
 
-    private static final Map<ChessPiece.PieceType, String> blackPieceMap = Map.of(
+    private static final Map<ChessPiece.PieceType, String> BLACK_PIECE_MAP = Map.of(
         ChessPiece.PieceType.KING, BLACK_KING,
         ChessPiece.PieceType.QUEEN, BLACK_QUEEN,
         ChessPiece.PieceType.ROOK, BLACK_ROOK,
@@ -32,7 +32,7 @@ public class ClientChessBoard {
         ChessPiece.PieceType.PAWN, BLACK_PAWN
     );
 
-    private static final Map<ChessPiece.PieceType, String> whitePieceMap = Map.of(
+    private static final Map<ChessPiece.PieceType, String> WHITE_PIECE_MAP = Map.of(
         ChessPiece.PieceType.KING, WHITE_KING,
         ChessPiece.PieceType.QUEEN, WHITE_QUEEN,
         ChessPiece.PieceType.ROOK, WHITE_ROOK,
@@ -58,10 +58,10 @@ public class ClientChessBoard {
 
     private void drawAbc(boolean reversed) {
         int increment = reversed ? -1 : 1;
-        int start = reversed ? letters.length - 1 : 0;
+        int start = reversed ? LETTERS.length - 1 : 0;
         StringBuilder stringBuilder = new StringBuilder();
-        for (int i = start; i >= 0 && i < letters.length; i += increment) {
-            stringBuilder.append(letters[i]);
+        for (int i = start; i >= 0 && i < LETTERS.length; i += increment) {
+            stringBuilder.append(LETTERS[i]);
         }
         System.out.println(SET_BG_COLOR_DARK_GREEN + SET_TEXT_COLOR_YELLOW + stringBuilder + RESET_BG_COLOR);
     }
@@ -91,8 +91,8 @@ public class ClientChessBoard {
             return EMPTY;
         }
         if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-            return whitePieceMap.get(piece.getPieceType());
+            return WHITE_PIECE_MAP.get(piece.getPieceType());
         }
-        return blackPieceMap.get(piece.getPieceType());
+        return BLACK_PIECE_MAP.get(piece.getPieceType());
     }
 }
