@@ -34,7 +34,7 @@ public class ServerFacade {
 
     public void logout() throws ResponseException {
         if (!signedIn()) {
-            throw new RuntimeException("Cannot make request, not logged in.");
+            throw new ResponseException("Cannot make request, not logged in.", 500);
         }
         var response = clientCommunicator.delete("/session", authToken);
         handleResponse(response, LogoutResult.class);
@@ -43,7 +43,7 @@ public class ServerFacade {
 
     public ListGamesResult listGames() throws ResponseException {
         if (!signedIn()) {
-            throw new RuntimeException("Cannot make request, not logged in.");
+            throw new ResponseException("Cannot make request, not logged in.", 500);
         }
         gameIDMap = new HashMap<>();
         HttpResponse<String> response = clientCommunicator.get("/game", authToken);
@@ -58,7 +58,7 @@ public class ServerFacade {
 
     public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {
         if (!signedIn()) {
-            throw new RuntimeException("Cannot make request, not logged in.");
+            throw new ResponseException("Cannot make request, not logged in.", 500);
         }
         var response = clientCommunicator.post("/game", request, authToken);
         return handleResponse(response, CreateGameResult.class);
@@ -66,7 +66,7 @@ public class ServerFacade {
 
     public void joinGame(int gameID, String playerColor) throws ResponseException {
         if (!signedIn()) {
-            throw new RuntimeException("Cannot make request, not logged in.");
+            throw new ResponseException("Cannot make request, not logged in.", 500);
         }
         JoinGameRequest request = new JoinGameRequest(playerColor, gameID, null);
         var response = clientCommunicator.put("/game", request, authToken);

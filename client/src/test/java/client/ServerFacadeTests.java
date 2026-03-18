@@ -3,6 +3,7 @@ package client;
 import exception.ResponseException;
 import org.junit.jupiter.api.*;
 import request.LoginRequest;
+import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
 import server.Server;
@@ -28,7 +29,6 @@ public class ServerFacadeTests {
         server = new Server();
         port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
-        facade = new ServerFacade(port);
     }
 
     @BeforeEach
@@ -44,6 +44,7 @@ public class ServerFacadeTests {
             client.send(request, HttpResponse.BodyHandlers.ofString());
             client.close();
         });
+        facade = new ServerFacade(port);
     }
 
     @Test
@@ -92,6 +93,49 @@ public class ServerFacadeTests {
         assertFalse(facade.signedIn());
         assertThrows(ResponseException.class, () -> {
             facade.login(request);
+        });
+    }
+
+    @Test
+    void testLogoutValid() {
+        RegisterRequest request = new RegisterRequest("User", "Pass", "Email");
+        assertFalse(facade.signedIn());
+        assertDoesNotThrow(() -> {
+            facade.register(request);
+        });
+        assertTrue(facade.signedIn());
+        assertDoesNotThrow(() -> {
+            facade.logout();
+        });
+        assertFalse(facade.signedIn());
+    }
+
+    @Test
+    void testLogoutInvalid() {
+        assertThrows(ResponseException.class, () -> {
+            facade.logout();
+        });
+    }
+
+    @Test
+    void testListGamesValid() {
+        RegisterRequest request = new RegisterRequest("User", "Pass", "Email");
+        assertFalse(facade.signedIn());
+        assertDoesNotThrow(() -> {
+            facade.register(request);
+        });
+        assertTrue(facade.signedIn());
+        assertDoesNotThrow(() -> {
+            var games = facade.listGames();
+            assertEquals(0, games.getGames().size());
+        });
+    }
+
+    @Test
+    void testListGamesInvalid() {
+        assertThrows(ResponseException.class, () -> {
+            var games = facade.listGames();
+            assertEquals(0, games.getGames().size());
         });
     }
 
