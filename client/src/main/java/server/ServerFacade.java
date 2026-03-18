@@ -44,7 +44,7 @@ public class ServerFacade {
         if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
-        String response = clientCommunicator.get("/games", authToken);
+        String response = clientCommunicator.get("/game", authToken);
         ListGamesResult gameList = (ListGamesResult) translator.translateObject(response, ListGamesResult.class);
         int i = 1;
         for (ListGamesResult.GameMetadata game : gameList.getGames()) {

@@ -38,7 +38,7 @@ public class ClientCommunicator {
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
                 return response.body();
             }
-            throw translator.translateException(response.body());
+            throw translator.translateException(response);
         } catch (Exception e) {
             throw new ResponseException(e.getMessage(), 0);
         }
