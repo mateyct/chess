@@ -4,9 +4,7 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import result.Result;
 
-import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
-import java.util.HashMap;
 
 public class JSONTranslator {
     private final Gson gson;
@@ -22,7 +20,7 @@ public class JSONTranslator {
         return new ResponseException(message, statusCode);
     }
 
-    public Object translateObject(String body, Type type){
+    public <T> T translateObject(String body, Class<T> type){
         return gson.fromJson(body, type);
     }
 

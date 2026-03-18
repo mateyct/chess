@@ -6,6 +6,8 @@ import model.GameData;
 import request.*;
 import result.*;
 
+import java.lang.reflect.Type;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,8 +46,8 @@ public class ServerFacade {
         if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
-        String response = clientCommunicator.get("/game", authToken);
-        ListGamesResult gameList = (ListGamesResult) translator.translateObject(response, ListGamesResult.class);
+        HttpResponse<String> response = clientCommunicator.get("/game", authToken);
+        ListGamesResult gameList = handleResponse(response, ListGamesResult.class);
         int i = 1;
         for (ListGamesResult.GameMetadata game : gameList.getGames()) {
             gameIDMap.put(i, game.gameID());
@@ -75,5 +77,17 @@ public class ServerFacade {
 
     public boolean signedIn() {
         return authToken != null && !authToken.isEmpty();
+    }
+
+    private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {
+        if (response.statusCode() >= 200 && response.statusCode() < 300) {
+            return translator.translateObject(response.body(), responseClass);
+        }
+        var body = response.body();
+        if (body != null) {
+            throw translator.translateException(response);
+        }
+
+        throw new ResponseException("An unexpected error occurred", 500);
     }
 }

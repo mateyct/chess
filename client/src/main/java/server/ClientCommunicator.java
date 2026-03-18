@@ -25,7 +25,7 @@ public class ClientCommunicator {
         translator = new JSONTranslator();
     }
 
-    public String get(String path, String auth) throws ResponseException {
+    public HttpResponse<String> get(String path, String auth) throws ResponseException {
         String urlString = String.format(Locale.getDefault(), "http://%s:%d%s", hostname, port, path);
         try {
             HttpRequest request = HttpRequest.newBuilder(new URI(urlString))
@@ -34,17 +34,13 @@ public class ClientCommunicator {
                 .header("Authorization", auth)
                 .build();
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() >= 200 && response.statusCode() < 300) {
-                return response.body();
-            }
-            throw translator.translateException(response);
+            return client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
             throw new ResponseException(e.getMessage(), 0);
         }
     }
 
-    public String post(String path, Object body, String auth) throws ResponseException {
+    public HttpResponse<String> post(String path, Object body, String auth) throws ResponseException {
         String urlString = String.format(Locale.getDefault(), "http://%s:%d%s", hostname, port, path);
         try {
             HttpRequest.Builder builder = HttpRequest.newBuilder(new URI(urlString))
@@ -55,11 +51,7 @@ public class ClientCommunicator {
             }
             HttpRequest request = builder.build();
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() >= 200 && response.statusCode() < 300) {
-                return response.body();
-            }
-            throw translator.translateException(response);
+            return client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
             throw new ResponseException(e.getMessage(), 0);
         }
