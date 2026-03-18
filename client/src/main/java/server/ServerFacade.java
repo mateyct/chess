@@ -1,28 +1,21 @@
 package server;
 
-import chess.ChessGame;
 import exception.ResponseException;
-import model.GameData;
 import request.*;
 import result.*;
 
-import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ServerFacade {
     // methods are currently stubbed
     private String authToken;
-    private String username;
-    private int port;
     private Map<Integer, Integer> gameIDMap;
     private final JSONTranslator translator;
     private final ClientCommunicator clientCommunicator;
 
     public ServerFacade(int port) {
-        this.port = port;
         translator = new JSONTranslator();
         clientCommunicator = new ClientCommunicator("localhost", port);
     }
@@ -74,7 +67,7 @@ public class ServerFacade {
         if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
-        JoinGameRequest request = new JoinGameRequest(playerColor, gameID, username);
+        JoinGameRequest request = new JoinGameRequest(playerColor, gameID, null);
         var response = clientCommunicator.put("/game", request, authToken);
         handleResponse(response, JoinGameResult.class);
     }
