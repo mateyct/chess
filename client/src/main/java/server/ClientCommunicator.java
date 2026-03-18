@@ -56,4 +56,19 @@ public class ClientCommunicator {
             throw new ResponseException(e.getMessage(), 0);
         }
     }
+
+    public HttpResponse<String> delete(String path, String auth) throws ResponseException {
+        String urlString = String.format(Locale.getDefault(), "http://%s:%d%s", hostname, port, path);
+        try {
+            HttpRequest request = HttpRequest.newBuilder(new URI(urlString))
+                .timeout(TIMEOUT)
+                .DELETE()
+                .header("Authorization", auth)
+                .build();
+
+            return client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            throw new ResponseException(e.getMessage(), 0);
+        }
+    }
 }

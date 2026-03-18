@@ -43,6 +43,8 @@ public class ServerFacade {
         if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
+        var response = clientCommunicator.delete("/session", authToken);
+        handleResponse(response, LogoutResult.class);
         authToken = null;
     }
 
