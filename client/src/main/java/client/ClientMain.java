@@ -25,7 +25,7 @@ public class ClientMain {
 
     public ClientMain() {
         scan = new Scanner(System.in);
-        serverFacade = new ServerFacade(0);
+        serverFacade = new ServerFacade(8080);
         System.out.println("Welcome! It's time to play chess.");
     }
 

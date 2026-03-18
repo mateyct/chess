@@ -4,6 +4,7 @@ import exception.ResponseException;
 
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
@@ -13,6 +14,7 @@ public class ClientCommunicator {
     private final String hostname;
     private final int port;
     private final HttpClient client;
+    private final JSONTranslator translator;
 
     private static final Duration TIMEOUT = java.time.Duration.ofMillis(5000);
 
@@ -20,21 +22,23 @@ public class ClientCommunicator {
         this.hostname = hostname;
         this.port = port;
         client = HttpClient.newHttpClient();
+        translator = new JSONTranslator();
     }
 
-    public String get(String path) throws ResponseException {
+    public String get(String path, String auth) throws ResponseException {
         String urlString = String.format(Locale.getDefault(), "http://%s:%d%s", hostname, port, path);
         try {
             HttpRequest request = HttpRequest.newBuilder(new URI(urlString))
                 .timeout(TIMEOUT)
                 .GET()
+                .header("Authorization", auth)
                 .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
                 return response.body();
             }
-            return "";
+            throw translator.translateException(response.body());
         } catch (Exception e) {
             throw new ResponseException(e.getMessage(), 0);
         }

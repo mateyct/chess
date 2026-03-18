@@ -16,9 +16,13 @@ public class ServerFacade {
     private String username;
     private int port;
     private Map<Integer, Integer> gameIDMap;
+    private final JSONTranslator translator;
+    private final ClientCommunicator clientCommunicator;
 
     public ServerFacade(int port) {
         this.port = port;
+        translator = new JSONTranslator();
+        clientCommunicator = new ClientCommunicator("localhost", port);
     }
 
     public void login(LoginRequest request) throws ResponseException {
@@ -40,27 +44,13 @@ public class ServerFacade {
         if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
-        ArrayList<GameData> games = new ArrayList<>();
-        gameIDMap = new HashMap<>();
-        games.add(new GameData(
-            2,
-            "Dave",
-            "Mark",
-            "Coolest Game",
-            new ChessGame()
-        ));
-        games.add(new GameData(
-            3,
-            null,
-            null,
-            "Empty Game",
-            new ChessGame()
-        ));
-        for (int i = 1; i <= games.size(); i++) {
-            GameData currentGame = games.get(i - 1);
-            gameIDMap.put(i, currentGame.gameId());
+        String response = clientCommunicator.get("/games", authToken);
+        ListGamesResult gameList = (ListGamesResult) translator.translateObject(response, ListGamesResult.class);
+        int i = 1;
+        for (ListGamesResult.GameMetadata game : gameList.getGames()) {
+            gameIDMap.put(i, game.gameID());
         }
-        return new ListGamesResult(games);
+        return gameList;
     }
 
     public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {
