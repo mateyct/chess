@@ -25,4 +25,8 @@ public class JSONTranslator {
     public Object translateObject(String body, Type type){
         return gson.fromJson(body, type);
     }
+
+    public String toJson(Object body) {
+        return gson.toJson(body);
+    }
 }

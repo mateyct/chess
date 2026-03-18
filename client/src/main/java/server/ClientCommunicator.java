@@ -43,4 +43,25 @@ public class ClientCommunicator {
             throw new ResponseException(e.getMessage(), 0);
         }
     }
+
+    public String post(String path, Object body, String auth) throws ResponseException {
+        String urlString = String.format(Locale.getDefault(), "http://%s:%d%s", hostname, port, path);
+        try {
+            HttpRequest.Builder builder = HttpRequest.newBuilder(new URI(urlString))
+                .timeout(TIMEOUT)
+                .POST(HttpRequest.BodyPublishers.ofString(translator.toJson(body)));
+            if (auth != null && !auth.isEmpty()) {
+                builder = builder.header("Authorization", auth);
+            }
+            HttpRequest request = builder.build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                return response.body();
+            }
+            throw translator.translateException(response);
+        } catch (Exception e) {
+            throw new ResponseException(e.getMessage(), 0);
+        }
+    }
 }
