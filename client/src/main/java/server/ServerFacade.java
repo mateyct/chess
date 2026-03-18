@@ -32,7 +32,9 @@ public class ServerFacade {
     }
 
     public void register(RegisterRequest request) throws ResponseException {
-        authToken = request.password() + request.email();
+        var response = clientCommunicator.post("/user", request, null);
+        RegisterResult result = handleResponse(response, RegisterResult.class);
+        authToken = result.getAuthToken();
     }
 
     public void logout() throws ResponseException {
@@ -46,6 +48,7 @@ public class ServerFacade {
         if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
+        gameIDMap = new HashMap<>();
         HttpResponse<String> response = clientCommunicator.get("/game", authToken);
         ListGamesResult gameList = handleResponse(response, ListGamesResult.class);
         int i = 1;
