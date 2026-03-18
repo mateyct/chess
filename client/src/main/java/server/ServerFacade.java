@@ -28,7 +28,9 @@ public class ServerFacade {
     }
 
     public void login(LoginRequest request) throws ResponseException {
-        authToken = request.password() + request.hashCode();
+        var response = clientCommunicator.post("/session", request, null);
+        LoginResult result = handleResponse(response, LoginResult.class);
+        authToken = result.getAuthToken();
     }
 
     public void register(RegisterRequest request) throws ResponseException {
