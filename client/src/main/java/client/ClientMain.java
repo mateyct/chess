@@ -176,11 +176,11 @@ public class ClientMain {
             2);
         String color = colorChoice == 1 ? "WHITE" : "BLACK";
         serverFacade.joinGame(gameID, color);
-        drawTestBoard();
+        drawTestBoard(colorChoice == 2);
     }
 
     private void observeGame() throws ResponseException {
-        drawTestBoard();
+        drawTestBoard(false);
     }
 
     private int getIntInput(String prompt, int range) {
@@ -211,19 +211,9 @@ public class ClientMain {
         }
     }
 
-    private static void drawTestBoard() {
+    private static void drawTestBoard(boolean reversed) {
         ClientChessBoard board = new ClientChessBoard();
         ChessGame game = new ChessGame();
-        ChessMove move = new ChessMove(
-            new ChessPosition(2, 1),
-            new ChessPosition(3, 1),
-            null
-        );
-        try {
-            game.makeMove(move);
-        } catch (InvalidMoveException e) {
-            System.out.println("That's unfortunate.");
-        }
-        board.draw(game.getBoard(), false);
+        board.draw(game.getBoard(), reversed);
     }
 }
