@@ -66,13 +66,17 @@ public class ServerFacade {
         if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
-        return new CreateGameResult(1);
+        var response = clientCommunicator.post("/game", request, authToken);
+        return handleResponse(response, CreateGameResult.class);
     }
 
     public void joinGame(int gameID, String playerColor) throws ResponseException {
         if (!signedIn()) {
             throw new RuntimeException("Cannot make request, not logged in.");
         }
+        JoinGameRequest request = new JoinGameRequest(playerColor, gameID, username);
+        var response = clientCommunicator.put("/game", request, authToken);
+        handleResponse(response, JoinGameResult.class);
     }
 
     public int getGameCount() {

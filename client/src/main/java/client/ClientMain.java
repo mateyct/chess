@@ -141,7 +141,6 @@ public class ClientMain {
         CreateGameRequest request = new CreateGameRequest(gameName);
         CreateGameResult result = serverFacade.createGame(request);
         System.out.println("Game successfully created.");
-        System.out.println("Game ID: " + result.getGameID());
     }
 
     private void listGames() throws ResponseException {
