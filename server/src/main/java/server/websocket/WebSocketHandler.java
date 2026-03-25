@@ -55,7 +55,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             UserGameCommand command = translator.translateObject(ctx.message(), UserGameCommand.class);
             switch (command.getCommandType()) {
                 case CONNECT -> connect(command, ctx.session);
-                case LEAVE -> {}
+                case LEAVE -> leave(command, ctx.session);
                 case RESIGN -> {}
                 case MAKE_MOVE -> {}
             }
@@ -91,6 +91,31 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         return GameConnectionRole.OBSERVER;
     }
 
+    private void handlePlayerLeaving(GameConnectionRole role, GameData gameData) throws DataAccessException {
+        GameData updatedGame = null;
+        if (role == GameConnectionRole.BLACK_PLAYER) {
+            updatedGame = new GameData(
+                gameData.gameId(),
+                gameData.whiteUsername(),
+                null,
+                gameData.gameName(),
+                gameData.game()
+            );
+        }
+        if (role == GameConnectionRole.WHITE_PLAYER) {
+            updatedGame = new GameData(
+                gameData.gameId(),
+                null,
+                gameData.blackUsername(),
+                gameData.gameName(),
+                gameData.game()
+            );
+        }
+        if (updatedGame != null) {
+            gameDAO.updateGame(updatedGame.gameId(), updatedGame);
+        }
+    }
+
     private void connect(UserGameCommand command, Session session) throws IOException {
         try {
             String username = getUserByAuth(command.getAuthToken());
@@ -109,8 +134,23 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void leave(UserGameCommand command) {
-
+    private void leave(UserGameCommand command, Session session) throws IOException {
+        try {
+            String username = getUserByAuth(command.getAuthToken());
+            GameData game = getGameByID(command.getGameID());
+            GameConnectionRole connectionRole = getGameRole(game, username);
+            connections.removeSession(command.getGameID(), session);
+            handlePlayerLeaving(connectionRole, game);
+            ServerMessage msg = new NotificationServerMessage(username + " (" + connectionRole.name() + ") left the game");
+            connections.broadcast(command.getGameID(), session, msg);
+            session.close();
+        } catch (DataAccessException e) {
+            ServerMessage msg = new ErrorServerMessage("Unexpected server error.");
+            connections.broadcast(command.getGameID(), session, msg);
+        } catch (ResponseException e) {
+            ServerMessage msg = new ErrorServerMessage(e.getMessage());
+            connections.broadcast(command.getGameID(), session, msg);
+        }
     }
 
     private void resign(UserGameCommand command) {
