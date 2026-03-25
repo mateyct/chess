@@ -1,6 +1,6 @@
 package websocket.commands;
 
-public enum ConnectionType {
+public enum GameConnectionRole {
     WHITE_PLAYER,
     BLACK_PLAYER,
     OBSERVER

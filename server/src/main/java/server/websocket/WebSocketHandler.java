@@ -1,5 +1,6 @@
 package server.websocket;
 
+import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
@@ -13,8 +14,9 @@ import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
 import util.JSONTranslator;
-import websocket.commands.ConnectionType;
+import websocket.commands.GameConnectionRole;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorServerMessage;
 import websocket.messages.NotificationServerMessage;
 import websocket.messages.ServerMessage;
 
@@ -63,34 +65,47 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private ConnectionType getGameRole(int gameID, String authToken) throws ResponseException, DataAccessException {
-        GameData game = gameDAO.getGame(gameID);
+    private String getUserByAuth(String authToken) throws ResponseException, DataAccessException {
         AuthData authData = authDAO.getAuth(authToken);
-        if (game == null) {
-            throw new BadGameDataException("Provided game ID is not valid");
-        }
         if (authData == null) {
             throw new InvalidCredentialsException("Connected user is not authenticated.");
         }
-        if (authData.username().equals(game.whiteUsername())) {
-            return ConnectionType.WHITE_PLAYER;
+        return authData.username();
+    }
+
+    private GameData getGameByID(int gameID) throws DataAccessException, ResponseException {
+        GameData game = gameDAO.getGame(gameID);
+        if (game == null) {
+            throw new BadGameDataException("Provided game ID is not valid");
         }
-        if (authData.username().equals(game.blackUsername())) {
-            return ConnectionType.BLACK_PLAYER;
+        return game;
+    }
+
+    private GameConnectionRole getGameRole(GameData game, String username) {
+        if (username.equals(game.whiteUsername())) {
+            return GameConnectionRole.WHITE_PLAYER;
         }
-        return ConnectionType.OBSERVER;
+        if (username.equals(game.blackUsername())) {
+            return GameConnectionRole.BLACK_PLAYER;
+        }
+        return GameConnectionRole.OBSERVER;
     }
 
     private void connect(UserGameCommand command, Session session) throws IOException {
         try {
-            ConnectionType connectionType = getGameRole(command.getGameID(), command.getAuthToken());
+            String username = getUserByAuth(command.getAuthToken());
+            GameData game = getGameByID(command.getGameID());
+            GameConnectionRole connectionType = getGameRole(game, username);
             connections.addSession(command.getGameID(), session);
-            ServerMessage msg = new NotificationServerMessage(command.getAuthToken() + " joined the game.");
+            ServerMessage msg = new NotificationServerMessage(username + " joined the game as " + connectionType.name() + ".");
             connections.broadcast(command.getGameID(), session, msg);
+            session.getRemote().sendString(translator.toJson(game.game()));
         } catch (DataAccessException e) {
-            // send error to client
+            ServerMessage msg = new ErrorServerMessage("Unexpected server error.");
+            connections.broadcast(command.getGameID(), session, msg);
         } catch (ResponseException e) {
-            // send error to client
+            ServerMessage msg = new ErrorServerMessage(e.getMessage());
+            connections.broadcast(command.getGameID(), session, msg);
         }
     }
 
