@@ -15,6 +15,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
 import util.JSONTranslator;
 import websocket.commands.GameConnectionRole;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorServerMessage;
 import websocket.messages.NotificationServerMessage;
@@ -57,7 +58,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 case CONNECT -> connect(command, ctx.session);
                 case LEAVE -> leave(command, ctx.session);
                 case RESIGN -> {}
-                case MAKE_MOVE -> {}
+                case MAKE_MOVE -> {
+                    MakeMoveCommand moveCommand = translator.translateObject(ctx.message(), MakeMoveCommand.class);
+                    makeMove(moveCommand, ctx.session);
+                }
             }
         }
         catch (IOException e) {
@@ -157,7 +161,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    private void makeMove(UserGameCommand command) {
+    private void makeMove(MakeMoveCommand command, Session session) {
 
     }
 }
