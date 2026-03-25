@@ -11,11 +11,11 @@ import java.util.Objects;
 public class ChessPosition {
 
     private final int row;
-    private final int col;
+    private final int column;
 
     public ChessPosition(int row, int col) {
         this.row = row;
-        this.col = col;
+        this.column = col;
     }
 
     /**
@@ -31,7 +31,7 @@ public class ChessPosition {
      * 1 codes for the left row
      */
     public int getColumn() {
-        return col;
+        return column;
     }
 
     @Override
@@ -39,11 +39,11 @@ public class ChessPosition {
         if (!(obj instanceof ChessPosition comparePos)) {
             return false;
         }
-        return row == comparePos.getRow() && col == comparePos.getColumn();
+        return row == comparePos.getRow() && column == comparePos.getColumn();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(row, col);
+        return Objects.hash(row, column);
     }
 }
