@@ -6,6 +6,7 @@ import exception.ResponseException;
 import io.javalin.http.Context;
 import request.*;
 import result.*;
+import server.websocket.WebSocketHandler;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
@@ -16,18 +17,24 @@ public class Handlers {
     private final UserService userService;
     private final ClearService clearService;
     private final GameService gameService;
+    private final WebSocketHandler wsHandler;
 
     public Handlers() {
         try {
             AuthDAO authDAO = new DatabaseAuthDAO();
             UserDAO userDAO = new DatabaseUserDAO();
             GameDAO gameDAO = new DatabaseGameDAO();
+            wsHandler = new WebSocketHandler();
             userService = new UserService(authDAO, userDAO);
             clearService = new ClearService(authDAO, userDAO, gameDAO);
             gameService = new GameService(gameDAO);
         } catch (DataAccessException ex) {
             throw new RuntimeException("Failed to set up database connections: " + ex.getMessage());
         }
+    }
+
+    public WebSocketHandler getWebSocketHandler() {
+        return wsHandler;
     }
 
     public void registerHandler(Context ctx) throws ResponseException {

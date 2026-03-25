@@ -21,7 +21,7 @@ public class Server {
         }
 
         Handlers handlers = new Handlers();
-        WebSocketHandler wsHandler = new WebSocketHandler();
+        WebSocketHandler wsHandler = handlers.getWebSocketHandler();
 
         javalin.post("/user", handlers::registerHandler);
         javalin.post("/session", handlers::loginHandler);
