@@ -1,6 +1,7 @@
 package server.websocket;
 
 import org.eclipse.jetty.websocket.api.Session;
+import util.JSONTranslator;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -11,9 +12,11 @@ import java.util.Set;
 
 public class ConnectionManager {
     private final Map<Integer, Set<Session>> sessionMap;
+    private final JSONTranslator translator;
 
     public ConnectionManager() {
         sessionMap = new HashMap<>();
+        translator = new JSONTranslator();
     }
 
     public void addSession(int gameID, Session session) {
@@ -37,7 +40,7 @@ public class ConnectionManager {
         if (!sessionMap.containsKey(gameID)) {
             return;
         }
-        String msg = "test";
+        String msg = translator.toJson(message);
         for (Session session : sessionMap.get(gameID)) {
             if (session.isOpen()) {
                 if (!session.equals(excludeSession)) {
