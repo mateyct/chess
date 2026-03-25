@@ -24,7 +24,7 @@ public class Handlers {
             AuthDAO authDAO = new DatabaseAuthDAO();
             UserDAO userDAO = new DatabaseUserDAO();
             GameDAO gameDAO = new DatabaseGameDAO();
-            wsHandler = new WebSocketHandler();
+            wsHandler = new WebSocketHandler(authDAO, gameDAO, userDAO);
             userService = new UserService(authDAO, userDAO);
             clearService = new ClearService(authDAO, userDAO, gameDAO);
             gameService = new GameService(gameDAO);
