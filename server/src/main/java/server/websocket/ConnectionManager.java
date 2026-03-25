@@ -1,0 +1,49 @@
+package server.websocket;
+
+import org.eclipse.jetty.websocket.api.Session;
+import websocket.messages.ServerMessage;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+public class ConnectionManager {
+    private final Map<Integer, Set<Session>> sessionMap;
+
+    public ConnectionManager() {
+        sessionMap = new HashMap<>();
+    }
+
+    public void addSession(int gameID, Session session) {
+        if (!sessionMap.containsKey(gameID)) {
+            sessionMap.put(gameID, new HashSet<>());
+        }
+        sessionMap.get(gameID).add(session);
+    }
+
+    public void removeSession(int gameID, Session session) {
+        if (!sessionMap.containsKey(gameID)) {
+            return;
+        }
+        sessionMap.get(gameID).remove(session);
+        if (sessionMap.get(gameID).isEmpty()) {
+            sessionMap.remove(gameID);
+        }
+    }
+
+    public void broadcast(int gameID, Session excludeSession, ServerMessage message) throws IOException {
+        if (!sessionMap.containsKey(gameID)) {
+            return;
+        }
+        String msg = "test";
+        for (Session session : sessionMap.get(gameID)) {
+            if (session.isOpen()) {
+                if (!session.equals(excludeSession)) {
+                    session.getRemote().sendString(msg);
+                }
+            }
+        }
+    }
+}
