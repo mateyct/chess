@@ -4,6 +4,7 @@ import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import exception.ResponseException;
 import io.javalin.*;
+import server.websocket.WebSocketHandler;
 
 public class Server {
 
@@ -20,6 +21,7 @@ public class Server {
         }
 
         Handlers handlers = new Handlers();
+        WebSocketHandler wsHandler = new WebSocketHandler();
 
         javalin.post("/user", handlers::registerHandler);
         javalin.post("/session", handlers::loginHandler);
@@ -33,7 +35,11 @@ public class Server {
         javalin.post("/game", handlers::createGameHandler);
         javalin.get("/game", handlers::listGamesHandler);
         javalin.put("/game", handlers::joinGameHandler);
-
+        javalin.ws("/ws", ws -> {
+            ws.onClose(wsHandler);
+            ws.onMessage(wsHandler);
+            ws.onClose(wsHandler);
+        });
 
         javalin.delete("/db", handlers::clearHandler);
 
