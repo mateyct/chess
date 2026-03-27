@@ -34,7 +34,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private final JSONTranslator translator;
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
-    private final UserDAO userDAO;
 
     private static final Map<Integer, String> POSITION_LETTER_MAP = Map.of(
         1, "a",
@@ -47,10 +46,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         8, "h"
     );
 
-    public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO) {
+    public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
-        this.userDAO = userDAO;
         connections = new ConnectionManager();
         translator = new JSONTranslator();
     }
@@ -62,9 +60,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     @Override
-    public void handleClose(@NotNull WsCloseContext ctx) {
-        System.out.println("WebSocket closed");
-    }
+    public void handleClose(@NotNull WsCloseContext ctx) {}
 
     @Override
     public void handleMessage(@NotNull WsMessageContext ctx) {
