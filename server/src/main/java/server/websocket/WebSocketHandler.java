@@ -164,7 +164,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ServerMessage msg = new NotificationServerMessage(username + " (" + connectionRole.name() + ") left the game");
         connections.broadcast(command.getGameID(), session, msg);
         session.close();
-        connections.removeSession(game.gameId(), session);
     }
 
     private void resign(UserGameCommand command) throws IOException, DataAccessException, ResponseException {
@@ -173,6 +172,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         GameConnectionRole connectionRole = getGameRole(game, username);
         if (connectionRole == GameConnectionRole.OBSERVER) {
             throw new ResponseException("Only players can resign the game", 400);
+        }
+        if (game.game().getGameOver()){
+            throw new ResponseException("Cannot resign twice, game is over", 400);
         }
         game.game().setGameOver();
         gameDAO.updateGame(game.gameId(), game);
@@ -228,7 +230,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
         ChessMove move = command.getMove();
         if (!chessGame.validMove(move, userColor)) {
-            ServerMessage msg = new ErrorServerMessage("Cannot move piece isn't your color");
+            ServerMessage msg = new ErrorServerMessage("Cannot move piece that isn't your color");
             connections.messageSession(session, msg);
             return;
         }

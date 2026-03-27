@@ -86,7 +86,7 @@ public class ChessGame {
         if (piece == null) {
             return false;
         }
-        if (userColor != null && piece.getTeamColor() == userColor) {
+        if (userColor != null && piece.getTeamColor() != userColor) {
             return false;
         }
         if (piece.getTeamColor() != currentTeam) {
