@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ServerFacade {
-    // methods are currently stubbed
     private String authToken;
     private Map<Integer, Integer> gameIDMap;
     private final JSONTranslator translator;
@@ -83,6 +82,10 @@ public class ServerFacade {
 
     public boolean signedIn() {
         return authToken != null && !authToken.isEmpty();
+    }
+
+    public String getAuthToken() {
+        return authToken;
     }
 
     private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {
