@@ -10,9 +10,9 @@ public class GameplayCLI implements NotificationHandler {
     private ServerFacade serverFacade;
     private WebSocketCommunicator ws;
 
-    public GameplayCLI(ServerFacade serverFacade) {
+    public GameplayCLI(String url, ServerFacade serverFacade) {
         this.serverFacade = serverFacade;
-        this.ws = new WebSocketCommunicator(this);
+        this.ws = new WebSocketCommunicator(url, this);
     }
 
     @Override

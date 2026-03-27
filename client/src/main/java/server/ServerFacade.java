@@ -15,9 +15,9 @@ public class ServerFacade {
     private final JSONTranslator translator;
     private final ClientCommunicator clientCommunicator;
 
-    public ServerFacade(int port) {
+    public ServerFacade(String url, int port) {
         translator = new JSONTranslator();
-        clientCommunicator = new ClientCommunicator("localhost", port);
+        clientCommunicator = new ClientCommunicator(url, port);
     }
 
     public void login(LoginRequest request) throws ResponseException {

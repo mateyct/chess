@@ -20,14 +20,20 @@ public class ClientMain {
     private final ServerFacade serverFacade;
 
     public static void main(String[] args) {
-        ClientMain client = new ClientMain();
+        String url = "http://localhost";
+        int port = 8080;
+        if (args.length == 2) {
+            url = args[0];
+            port = Integer.parseInt(args[1]);
+        }
+        ClientMain client = new ClientMain(url, port);
         client.mainLoop();
         client.closeScanner();
     }
 
-    public ClientMain() {
+    public ClientMain(String url, int port) {
         scan = new Scanner(System.in);
-        serverFacade = new ServerFacade(8080);
+        serverFacade = new ServerFacade(url, port);
         System.out.println("Welcome! It's time to play chess.");
     }
 

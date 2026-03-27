@@ -33,7 +33,7 @@ public class ServerFacadeTests {
     void reset() {
         assertDoesNotThrow(() -> {
             var client = HttpClient.newHttpClient();
-            String urlString = String.format(Locale.getDefault(), "http://%s:%d%s", "localhost", port, "/db");
+            String urlString = String.format(Locale.getDefault(), "%s:%d%s", "http://localhost", port, "/db");
             HttpRequest request = HttpRequest.newBuilder(new URI(urlString))
                 .timeout(java.time.Duration.ofMillis(5000))
                 .DELETE()
@@ -42,7 +42,7 @@ public class ServerFacadeTests {
             client.send(request, HttpResponse.BodyHandlers.ofString());
             client.close();
         });
-        facade = new ServerFacade(port);
+        facade = new ServerFacade("http://localhost", port);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class ServerFacadeTests {
         });
         assertTrue(facade.signedIn());
         LoginRequest loginRequest = new LoginRequest("User", "Pass");
-        facade = new ServerFacade(port);
+        facade = new ServerFacade("http://localhost", port);
         assertFalse(facade.signedIn());
         assertDoesNotThrow(() -> {
             facade.login(loginRequest);

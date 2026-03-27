@@ -7,7 +7,7 @@ import jakarta.websocket.Session;
 public class WebSocketCommunicator extends Endpoint {
     private NotificationHandler notificationHandler;
 
-    public WebSocketCommunicator(NotificationHandler notificationHandler) {
+    public WebSocketCommunicator(String url, NotificationHandler notificationHandler) {
         this.notificationHandler = notificationHandler;
     }
 

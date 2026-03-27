@@ -11,22 +11,22 @@ import java.time.Duration;
 import java.util.Locale;
 
 public class ClientCommunicator {
-    private final String hostname;
+    private final String url;
     private final int port;
     private final HttpClient client;
     private final JSONTranslator translator;
 
     private static final Duration TIMEOUT = java.time.Duration.ofMillis(5000);
 
-    public ClientCommunicator(String hostname, int port) {
-        this.hostname = hostname;
+    public ClientCommunicator(String url, int port) {
+        this.url = url;
         this.port = port;
         client = HttpClient.newHttpClient();
         translator = new JSONTranslator();
     }
 
     public HttpResponse<String> get(String path, String auth) throws ResponseException {
-        String urlString = String.format(Locale.getDefault(), "http://%s:%d%s", hostname, port, path);
+        String urlString = String.format(Locale.getDefault(), "%s:%d%s", url, port, path);
         try {
             HttpRequest request = HttpRequest.newBuilder(new URI(urlString))
                 .timeout(TIMEOUT)
@@ -41,7 +41,7 @@ public class ClientCommunicator {
     }
 
     public HttpResponse<String> post(String path, Object body, String auth) throws ResponseException {
-        String urlString = String.format(Locale.getDefault(), "http://%s:%d%s", hostname, port, path);
+        String urlString = String.format(Locale.getDefault(), "%s:%d%s", url, port, path);
         try {
             HttpRequest.Builder builder = HttpRequest.newBuilder(new URI(urlString))
                 .timeout(TIMEOUT)
@@ -58,7 +58,7 @@ public class ClientCommunicator {
     }
 
     public HttpResponse<String> delete(String path, String auth) throws ResponseException {
-        String urlString = String.format(Locale.getDefault(), "http://%s:%d%s", hostname, port, path);
+        String urlString = String.format(Locale.getDefault(), "%s:%d%s", url, port, path);
         try {
             HttpRequest request = HttpRequest.newBuilder(new URI(urlString))
                 .timeout(TIMEOUT)
@@ -73,7 +73,7 @@ public class ClientCommunicator {
     }
 
     public HttpResponse<String> put(String path, Object body, String auth) throws ResponseException {
-        String urlString = String.format(Locale.getDefault(), "http://%s:%d%s", hostname, port, path);
+        String urlString = String.format(Locale.getDefault(), "%s:%d%s", url, port, path);
         try {
             HttpRequest.Builder builder = HttpRequest.newBuilder(new URI(urlString))
                 .timeout(TIMEOUT)
