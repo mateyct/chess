@@ -16,12 +16,15 @@ public class ChessGame {
     private ChessBoard testBoard;
     private TeamColor currentTeam;
 
+    private boolean gameOver;
+
     public ChessGame() {
         board = new ChessBoard();
         board.resetBoard();
         testBoard = new ChessBoard();
         testBoard.resetBoard();
         currentTeam = TeamColor.WHITE;
+        gameOver = false;
     }
 
     /**
@@ -75,6 +78,24 @@ public class ChessGame {
         return checkedMoves;
     }
 
+    public boolean validMove(ChessMove move, TeamColor userColor) {
+        if (gameOver) {
+            return false;
+        }
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+        if (piece == null) {
+            return false;
+        }
+        if (userColor != null && piece.getTeamColor() == userColor) {
+            return false;
+        }
+        if (piece.getTeamColor() != currentTeam) {
+            return false;
+        }
+        Collection<ChessMove> moves = validMoves(move.getStartPosition());
+        return moves.contains(move);
+    }
+
     /**
      * Makes a move in a chess game
      *
@@ -82,14 +103,14 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        if (gameOver) {
+            throw new InvalidMoveException("No more moves can be made.");
+        }
+        boolean validMove = validMove(move, null);
+        if (!validMove) {
+            throw new InvalidMoveException("Attempted to move piece out of turn.");
+        }
         ChessPiece piece = board.getPiece(move.getStartPosition());
-        if (piece == null || piece.getTeamColor() != currentTeam) {
-            throw new InvalidMoveException("Attempted to move piece out of turn.");
-        }
-        Collection<ChessMove> moves = validMoves(move.getStartPosition());
-        if (!moves.contains(move)) {
-            throw new InvalidMoveException("Attempted to move piece out of turn.");
-        }
         board.addPiece(move.getStartPosition(), null);
         testBoard.addPiece(move.getStartPosition(), null);
         if (move.getPromotionPiece() != null) {
@@ -347,6 +368,7 @@ public class ChessGame {
                 return false;
             }
         }
+        gameOver = true;
         return true;
     }
 
@@ -367,6 +389,7 @@ public class ChessGame {
                 return false;
             }
         }
+        gameOver = true;
         return true;
     }
 
@@ -392,6 +415,14 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return board;
+    }
+
+    public boolean getGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver() {
+        gameOver = true;
     }
 
     @Override
