@@ -1,5 +1,6 @@
 package ui;
 
+import exception.ResponseException;
 import server.ServerFacade;
 import server.websocket.NotificationHandler;
 import server.websocket.WebSocketCommunicator;
@@ -10,7 +11,7 @@ public class GameplayCLI implements NotificationHandler {
     private ServerFacade serverFacade;
     private WebSocketCommunicator ws;
 
-    public GameplayCLI(String url, ServerFacade serverFacade) {
+    public GameplayCLI(String url, ServerFacade serverFacade) throws ResponseException {
         this.serverFacade = serverFacade;
         this.ws = new WebSocketCommunicator(url, this);
     }
