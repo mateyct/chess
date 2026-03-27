@@ -49,4 +49,11 @@ public class ConnectionManager {
             }
         }
     }
+
+    public void messageSession(Session session, ServerMessage message) throws IOException {
+        String msg = translator.toJson(message);
+        if (session.isOpen()) {
+            session.getRemote().sendString(msg);
+        }
+    }
 }
