@@ -73,7 +73,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             switch (command.getCommandType()) {
                 case CONNECT -> connect(command, ctx.session);
                 case LEAVE -> leave(command, ctx.session);
-                case RESIGN -> {}
+                case RESIGN -> resign(command, ctx.session);
                 case MAKE_MOVE -> {
                     MakeMoveCommand moveCommand = translator.translateObject(ctx.message(), MakeMoveCommand.class);
                     makeMove(moveCommand, ctx.session);
@@ -173,8 +173,25 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void resign(UserGameCommand command) {
-
+    private void resign(UserGameCommand command, Session session) throws IOException {
+        try {
+            String username = getUserByAuth(command.getAuthToken());
+            GameData game = getGameByID(command.getGameID());
+            GameConnectionRole connectionRole = getGameRole(game, username);
+            if (connectionRole == GameConnectionRole.OBSERVER) {
+                throw new ResponseException("Only players can resign the game", 400);
+            }
+            game.game().setGameOver();
+            gameDAO.updateGame(game.gameId(), game);
+            ServerMessage msg = new NotificationServerMessage(username + " resigned the game, game is over.");
+            connections.broadcast(game.gameId(), null, msg);
+        } catch (DataAccessException e) {
+            ServerMessage msg = new ErrorServerMessage("Unexpected server error.");
+            connections.broadcast(command.getGameID(), session, msg);
+        } catch (ResponseException e) {
+            ServerMessage msg = new ErrorServerMessage(e.getMessage());
+            connections.broadcast(command.getGameID(), session, msg);
+        }
     }
 
     private void sendMoveMessage(ChessMove move, Session session, int gameID, String username) throws IOException {
@@ -203,7 +220,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         if (gameData.game().isInCheck(color)) {
             ServerMessage msg = new NotificationServerMessage(username + " is in check.");
             connections.broadcast(gameData.gameId(), null, msg);
-            return;
         }
     }
 
