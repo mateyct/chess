@@ -1,6 +1,9 @@
 package server.websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.InvalidMoveException;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
@@ -18,10 +21,12 @@ import websocket.commands.GameConnectionRole;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorServerMessage;
+import websocket.messages.LoadGameServerMessage;
 import websocket.messages.NotificationServerMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
@@ -30,6 +35,17 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
     private final UserDAO userDAO;
+
+    private static final Map<Integer, String> POSITION_LETTER_MAP = Map.of(
+        1, "a",
+        2, "b",
+        3, "c",
+        4, "d",
+        5, "e",
+        6, "f",
+        7, "g",
+        8, "h"
+    );
 
     public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO) {
         this.authDAO = authDAO;
@@ -128,7 +144,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connections.addSession(command.getGameID(), session);
             ServerMessage msg = new NotificationServerMessage(username + " joined the game as " + connectionType.name() + ".");
             connections.broadcast(command.getGameID(), session, msg);
-            session.getRemote().sendString(translator.toJson(game.game()));
+            connections.messageSession(session, new LoadGameServerMessage(game.game()));
         } catch (DataAccessException e) {
             ServerMessage msg = new ErrorServerMessage("Unexpected server error.");
             connections.broadcast(command.getGameID(), session, msg);
@@ -161,7 +177,80 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    private void makeMove(MakeMoveCommand command, Session session) {
+    private void sendMoveMessage(ChessMove move, Session session, int gameID, String username) throws IOException {
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+        ServerMessage moveNotification = new NotificationServerMessage(
+            username + " moved piece from " + startPosition.getRow() +
+                POSITION_LETTER_MAP.get(startPosition.getColumn()) +
+                " to " + endPosition.getRow() + POSITION_LETTER_MAP.get(endPosition.getColumn()) + "."
+        );
+        connections.broadcast(gameID, session, moveNotification);
+    }
 
+    private void sendStatusMessage(GameData gameData, ChessGame.TeamColor color) throws IOException {
+        String username = color == ChessGame.TeamColor.BLACK ? gameData.blackUsername() : gameData.whiteUsername();
+        if (gameData.game().isInCheckmate(color)) {
+            ServerMessage msg = new NotificationServerMessage(username + " is in checkmate.");
+            connections.broadcast(gameData.gameId(), null, msg);
+            return;
+        }
+        if (gameData.game().isInStalemate(color)) {
+            ServerMessage msg = new NotificationServerMessage(username + " is in stalemate.");
+            connections.broadcast(gameData.gameId(), null, msg);
+            return;
+        }
+        if (gameData.game().isInCheck(color)) {
+            ServerMessage msg = new NotificationServerMessage(username + " is in check.");
+            connections.broadcast(gameData.gameId(), null, msg);
+            return;
+        }
+    }
+
+    private void makeMove(MakeMoveCommand command, Session session) throws IOException {
+        try {
+            String username = getUserByAuth(command.getAuthToken());
+            GameData game = getGameByID(command.getGameID());
+            GameConnectionRole connectionRole = getGameRole(game, username);
+            if (connectionRole == GameConnectionRole.OBSERVER) {
+                ServerMessage msg = new ErrorServerMessage("Observers cannot make moves");
+                connections.messageSession(session, msg);
+                return;
+            }
+            ChessGame chessGame = game.game();
+            if (chessGame.getGameOver()) {
+                ServerMessage msg = new ErrorServerMessage("Game is over, no more moves can be made.");
+                connections.messageSession(session, msg);
+                return;
+            }
+            ChessGame.TeamColor userColor = connectionRole == GameConnectionRole.BLACK_PLAYER ?
+                ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+            ChessMove move = command.getMove();
+            if (!chessGame.validMove(move, userColor)) {
+                ServerMessage msg = new ErrorServerMessage("Cannot move piece isn't your color");
+                connections.messageSession(session, msg);
+                return;
+            }
+            try {
+                chessGame.makeMove(move);
+            } catch (InvalidMoveException e) {ServerMessage msg = new ErrorServerMessage("Invalid Move");
+                connections.messageSession(session, msg);
+                return;
+            }
+            gameDAO.updateGame(game.gameId(), game);
+            ServerMessage loadGameMessage = new LoadGameServerMessage(game.game());
+            connections.broadcast(game.gameId(), null, loadGameMessage);
+            // send message notifying of move
+            sendMoveMessage(move, session, game.gameId(), username);
+            sendStatusMessage(game, ChessGame.TeamColor.BLACK);
+            sendStatusMessage(game, ChessGame.TeamColor.WHITE);
+
+        } catch (DataAccessException e) {
+            ServerMessage msg = new ErrorServerMessage("Unexpected server error.");
+            connections.broadcast(command.getGameID(), session, msg);
+        } catch (ResponseException e) {
+            ServerMessage msg = new ErrorServerMessage(e.getMessage());
+            connections.broadcast(command.getGameID(), session, msg);
+        }
     }
 }
