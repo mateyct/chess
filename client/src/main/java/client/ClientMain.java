@@ -12,6 +12,9 @@ import ui.EscapeSequences;
 
 import java.util.Scanner;
 
+import static ui.CLIUtils.getIntInput;
+import static ui.CLIUtils.getStringInput;
+
 public class ClientMain {
     private final Scanner scan;
     private final ServerFacade serverFacade;
@@ -59,7 +62,7 @@ public class ClientMain {
             2: Register
             3: Help
             4: Quit""";
-        switch (getIntInput(prompt, 4)) {
+        switch (getIntInput(prompt, 4, scan)) {
             case 1 -> {
                 login();
             }
@@ -91,7 +94,7 @@ public class ClientMain {
             4: Observe Game
             5: Help
             6: Logout""";
-        switch (getIntInput(prompt, 6)) {
+        switch (getIntInput(prompt, 6, scan)) {
             case 1 -> {
                 createGame();
             }
@@ -123,20 +126,20 @@ public class ClientMain {
     }
 
     private void login() throws ResponseException {
-        String username = getStringInput("Input username: ");
-        String password = getStringInput("Input password: ");
+        String username = getStringInput("Input username: ", scan);
+        String password = getStringInput("Input password: ", scan);
         serverFacade.login(new LoginRequest(username, password));
     }
 
     private void register() throws ResponseException {
-        String username = getStringInput("Input username: ");
-        String password = getStringInput("Input password: ");
-        String email = getStringInput("Input email: ");
+        String username = getStringInput("Input username: ", scan);
+        String password = getStringInput("Input password: ", scan);
+        String email = getStringInput("Input email: ", scan);
         serverFacade.register(new RegisterRequest(username, password, email));
     }
 
     private void createGame() throws ResponseException {
-        String gameName = getStringInput("Input game name");
+        String gameName = getStringInput("Input game name", scan);
         CreateGameRequest request = new CreateGameRequest(gameName);
         serverFacade.createGame(request);
         System.out.println("Game successfully created.");
@@ -167,13 +170,15 @@ public class ClientMain {
         }
         int gameID = getIntInput(
             "Enter gameID of the game you want to play:",
-            gameCount
+            gameCount,
+            scan
         );
         int colorChoice = getIntInput("""
             Which color do you want to play?:
             1. WHITE
             2. BLACK""",
-            2);
+            2,
+            scan);
         String color = colorChoice == 1 ? "WHITE" : "BLACK";
         serverFacade.joinGame(gameID, color);
         drawTestBoard(colorChoice == 2);
@@ -181,34 +186,6 @@ public class ClientMain {
 
     private void observeGame() throws ResponseException {
         drawTestBoard(false);
-    }
-
-    private int getIntInput(String prompt, int range) {
-        System.out.println(prompt);
-        int choice;
-        while (true) {
-            try {
-                String input = scan.nextLine().strip();
-                choice = Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                choice = 0;
-            }
-            if (choice >= 1 && choice <= range) {
-                return choice;
-            }
-            System.out.println("Invalid choice provided. Please choose a valid option");
-        }
-    }
-
-    private String getStringInput(String prompt) {
-        System.out.println(prompt);
-        while (true) {
-            String input = scan.nextLine();
-            if (!input.isEmpty()) {
-                return input;
-            }
-            System.out.println("Input cannot be empty.");
-        }
     }
 
     private static void drawTestBoard(boolean reversed) {
