@@ -69,15 +69,24 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     @Override
     public void handleMessage(@NotNull WsMessageContext ctx) {
         try {
-            UserGameCommand command = translator.translateObject(ctx.message(), UserGameCommand.class);
-            switch (command.getCommandType()) {
-                case CONNECT -> connect(command, ctx.session);
-                case LEAVE -> leave(command, ctx.session);
-                case RESIGN -> resign(command, ctx.session);
-                case MAKE_MOVE -> {
-                    MakeMoveCommand moveCommand = translator.translateObject(ctx.message(), MakeMoveCommand.class);
-                    makeMove(moveCommand, ctx.session);
+            try {
+                UserGameCommand command = translator.translateObject(ctx.message(), UserGameCommand.class);
+                switch (command.getCommandType()) {
+                    case CONNECT -> connect(command, ctx.session);
+                    case LEAVE -> leave(command, ctx.session);
+                    case RESIGN -> resign(command);
+                    case MAKE_MOVE -> {
+                        MakeMoveCommand moveCommand = translator.translateObject(ctx.message(), MakeMoveCommand.class);
+                        makeMove(moveCommand, ctx.session);
+                    }
                 }
+            } catch (DataAccessException e) {
+                ServerMessage msg = new ErrorServerMessage("Unexpected server error.");
+                connections.messageSession(ctx.session, msg);
+            } catch (ResponseException e) {
+                ServerMessage msg = new ErrorServerMessage(e.getMessage());
+                connections.messageSession(ctx.session, msg);
+
             }
         }
         catch (IOException e) {
@@ -136,62 +145,39 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void connect(UserGameCommand command, Session session) throws IOException {
-        try {
-            String username = getUserByAuth(command.getAuthToken());
-            GameData game = getGameByID(command.getGameID());
-            GameConnectionRole connectionType = getGameRole(game, username);
-            connections.addSession(command.getGameID(), session);
-            ServerMessage msg = new NotificationServerMessage(username + " joined the game as " + connectionType.name() + ".");
-            connections.broadcast(command.getGameID(), session, msg);
-            connections.messageSession(session, new LoadGameServerMessage(game.game()));
-        } catch (DataAccessException e) {
-            ServerMessage msg = new ErrorServerMessage("Unexpected server error.");
-            connections.broadcast(command.getGameID(), session, msg);
-        } catch (ResponseException e) {
-            ServerMessage msg = new ErrorServerMessage(e.getMessage());
-            connections.broadcast(command.getGameID(), session, msg);
-        }
+    private void connect(UserGameCommand command, Session session) throws IOException, DataAccessException, ResponseException {
+        String username = getUserByAuth(command.getAuthToken());
+        GameData game = getGameByID(command.getGameID());
+        GameConnectionRole connectionType = getGameRole(game, username);
+        connections.addSession(command.getGameID(), session);
+        ServerMessage msg = new NotificationServerMessage(username + " joined the game as " + connectionType.name() + ".");
+        connections.broadcast(command.getGameID(), session, msg);
+        connections.messageSession(session, new LoadGameServerMessage(game.game()));
     }
 
-    private void leave(UserGameCommand command, Session session) throws IOException {
-        try {
-            String username = getUserByAuth(command.getAuthToken());
-            GameData game = getGameByID(command.getGameID());
-            GameConnectionRole connectionRole = getGameRole(game, username);
-            connections.removeSession(command.getGameID(), session);
-            handlePlayerLeaving(connectionRole, game);
-            ServerMessage msg = new NotificationServerMessage(username + " (" + connectionRole.name() + ") left the game");
-            connections.broadcast(command.getGameID(), session, msg);
-            session.close();
-        } catch (DataAccessException e) {
-            ServerMessage msg = new ErrorServerMessage("Unexpected server error.");
-            connections.broadcast(command.getGameID(), session, msg);
-        } catch (ResponseException e) {
-            ServerMessage msg = new ErrorServerMessage(e.getMessage());
-            connections.broadcast(command.getGameID(), session, msg);
-        }
+    private void leave(UserGameCommand command, Session session) throws IOException, DataAccessException, ResponseException {
+        String username = getUserByAuth(command.getAuthToken());
+        GameData game = getGameByID(command.getGameID());
+        GameConnectionRole connectionRole = getGameRole(game, username);
+        connections.removeSession(command.getGameID(), session);
+        handlePlayerLeaving(connectionRole, game);
+        ServerMessage msg = new NotificationServerMessage(username + " (" + connectionRole.name() + ") left the game");
+        connections.broadcast(command.getGameID(), session, msg);
+        session.close();
+        connections.removeSession(game.gameId(), session);
     }
 
-    private void resign(UserGameCommand command, Session session) throws IOException {
-        try {
-            String username = getUserByAuth(command.getAuthToken());
-            GameData game = getGameByID(command.getGameID());
-            GameConnectionRole connectionRole = getGameRole(game, username);
-            if (connectionRole == GameConnectionRole.OBSERVER) {
-                throw new ResponseException("Only players can resign the game", 400);
-            }
-            game.game().setGameOver();
-            gameDAO.updateGame(game.gameId(), game);
-            ServerMessage msg = new NotificationServerMessage(username + " resigned the game, game is over.");
-            connections.broadcast(game.gameId(), null, msg);
-        } catch (DataAccessException e) {
-            ServerMessage msg = new ErrorServerMessage("Unexpected server error.");
-            connections.broadcast(command.getGameID(), session, msg);
-        } catch (ResponseException e) {
-            ServerMessage msg = new ErrorServerMessage(e.getMessage());
-            connections.broadcast(command.getGameID(), session, msg);
+    private void resign(UserGameCommand command) throws IOException, DataAccessException, ResponseException {
+        String username = getUserByAuth(command.getAuthToken());
+        GameData game = getGameByID(command.getGameID());
+        GameConnectionRole connectionRole = getGameRole(game, username);
+        if (connectionRole == GameConnectionRole.OBSERVER) {
+            throw new ResponseException("Only players can resign the game", 400);
         }
+        game.game().setGameOver();
+        gameDAO.updateGame(game.gameId(), game);
+        ServerMessage msg = new NotificationServerMessage(username + " resigned the game, game is over.");
+        connections.broadcast(game.gameId(), null, msg);
     }
 
     private void sendMoveMessage(ChessMove move, Session session, int gameID, String username) throws IOException {
@@ -223,50 +209,41 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void makeMove(MakeMoveCommand command, Session session) throws IOException {
-        try {
-            String username = getUserByAuth(command.getAuthToken());
-            GameData game = getGameByID(command.getGameID());
-            GameConnectionRole connectionRole = getGameRole(game, username);
-            if (connectionRole == GameConnectionRole.OBSERVER) {
-                ServerMessage msg = new ErrorServerMessage("Observers cannot make moves");
-                connections.messageSession(session, msg);
-                return;
-            }
-            ChessGame chessGame = game.game();
-            if (chessGame.getGameOver()) {
-                ServerMessage msg = new ErrorServerMessage("Game is over, no more moves can be made.");
-                connections.messageSession(session, msg);
-                return;
-            }
-            ChessGame.TeamColor userColor = connectionRole == GameConnectionRole.BLACK_PLAYER ?
-                ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
-            ChessMove move = command.getMove();
-            if (!chessGame.validMove(move, userColor)) {
-                ServerMessage msg = new ErrorServerMessage("Cannot move piece isn't your color");
-                connections.messageSession(session, msg);
-                return;
-            }
-            try {
-                chessGame.makeMove(move);
-            } catch (InvalidMoveException e) {ServerMessage msg = new ErrorServerMessage("Invalid Move");
-                connections.messageSession(session, msg);
-                return;
-            }
-            gameDAO.updateGame(game.gameId(), game);
-            ServerMessage loadGameMessage = new LoadGameServerMessage(game.game());
-            connections.broadcast(game.gameId(), null, loadGameMessage);
-            // send message notifying of move
-            sendMoveMessage(move, session, game.gameId(), username);
-            sendStatusMessage(game, ChessGame.TeamColor.BLACK);
-            sendStatusMessage(game, ChessGame.TeamColor.WHITE);
-
-        } catch (DataAccessException e) {
-            ServerMessage msg = new ErrorServerMessage("Unexpected server error.");
-            connections.broadcast(command.getGameID(), session, msg);
-        } catch (ResponseException e) {
-            ServerMessage msg = new ErrorServerMessage(e.getMessage());
-            connections.broadcast(command.getGameID(), session, msg);
+    private void makeMove(MakeMoveCommand command, Session session) throws IOException, DataAccessException, ResponseException {
+        String username = getUserByAuth(command.getAuthToken());
+        GameData game = getGameByID(command.getGameID());
+        GameConnectionRole connectionRole = getGameRole(game, username);
+        if (connectionRole == GameConnectionRole.OBSERVER) {
+            ServerMessage msg = new ErrorServerMessage("Observers cannot make moves");
+            connections.messageSession(session, msg);
+            return;
         }
+        ChessGame chessGame = game.game();
+        if (chessGame.getGameOver()) {
+            ServerMessage msg = new ErrorServerMessage("Game is over, no more moves can be made.");
+            connections.messageSession(session, msg);
+            return;
+        }
+        ChessGame.TeamColor userColor = connectionRole == GameConnectionRole.BLACK_PLAYER ?
+            ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+        ChessMove move = command.getMove();
+        if (!chessGame.validMove(move, userColor)) {
+            ServerMessage msg = new ErrorServerMessage("Cannot move piece isn't your color");
+            connections.messageSession(session, msg);
+            return;
+        }
+        try {
+            chessGame.makeMove(move);
+        } catch (InvalidMoveException e) {ServerMessage msg = new ErrorServerMessage("Invalid Move");
+            connections.messageSession(session, msg);
+            return;
+        }
+        gameDAO.updateGame(game.gameId(), game);
+        ServerMessage loadGameMessage = new LoadGameServerMessage(game.game());
+        connections.broadcast(game.gameId(), null, loadGameMessage);
+        // send message notifying of move
+        sendMoveMessage(move, session, game.gameId(), username);
+        sendStatusMessage(game, ChessGame.TeamColor.BLACK);
+        sendStatusMessage(game, ChessGame.TeamColor.WHITE);
     }
 }
