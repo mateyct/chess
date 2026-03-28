@@ -26,7 +26,13 @@ public class ClientCommunicator {
     }
 
     public HttpResponse<String> get(String path, String auth) throws ResponseException {
-        String urlString = String.format(Locale.getDefault(), "%s:%d%s", url, port, path);
+        String urlString;
+        if (port > 0) {
+            urlString = String.format(Locale.getDefault(), "%s:%d%s", url, port, path);
+        }
+        else {
+            urlString = String.format(Locale.getDefault(), "%s%s", url, path);
+        }
         try {
             HttpRequest request = HttpRequest.newBuilder(new URI(urlString))
                 .timeout(TIMEOUT)
@@ -41,7 +47,13 @@ public class ClientCommunicator {
     }
 
     public HttpResponse<String> post(String path, Object body, String auth) throws ResponseException {
-        String urlString = String.format(Locale.getDefault(), "%s:%d%s", url, port, path);
+        String urlString;
+        if (port > 0) {
+            urlString = String.format(Locale.getDefault(), "%s:%d%s", url, port, path);
+        }
+        else {
+            urlString = String.format(Locale.getDefault(), "%s%s", url, path);
+        }
         try {
             HttpRequest.Builder builder = HttpRequest.newBuilder(new URI(urlString))
                 .timeout(TIMEOUT)
@@ -58,7 +70,13 @@ public class ClientCommunicator {
     }
 
     public HttpResponse<String> delete(String path, String auth) throws ResponseException {
-        String urlString = String.format(Locale.getDefault(), "%s:%d%s", url, port, path);
+        String urlString;
+        if (port > 0) {
+            urlString = String.format(Locale.getDefault(), "%s:%d%s", url, port, path);
+        }
+        else {
+            urlString = String.format(Locale.getDefault(), "%s%s", url, path);
+        }
         try {
             HttpRequest request = HttpRequest.newBuilder(new URI(urlString))
                 .timeout(TIMEOUT)
@@ -73,7 +91,13 @@ public class ClientCommunicator {
     }
 
     public HttpResponse<String> put(String path, Object body, String auth) throws ResponseException {
-        String urlString = String.format(Locale.getDefault(), "%s:%d%s", url, port, path);
+        String urlString;
+        if (port > 0) {
+            urlString = String.format(Locale.getDefault(), "%s:%d%s", url, port, path);
+        }
+        else {
+            urlString = String.format(Locale.getDefault(), "%s%s", url, path);
+        }
         try {
             HttpRequest.Builder builder = HttpRequest.newBuilder(new URI(urlString))
                 .timeout(TIMEOUT)

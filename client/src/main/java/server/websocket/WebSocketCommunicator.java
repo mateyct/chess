@@ -25,7 +25,9 @@ public class WebSocketCommunicator extends Endpoint {
         jsonTranslator = new JSONTranslator();
         try {
             url = url.replace("http", "ws");
-            url += ":" + port;
+            if (port > 0) {
+                url += ":" + port;
+            }
             URI socketURI = new URI(url + "/ws");
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
