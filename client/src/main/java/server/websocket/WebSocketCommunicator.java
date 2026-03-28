@@ -3,6 +3,7 @@ package server.websocket;
 import exception.ResponseException;
 import jakarta.websocket.*;
 import util.JSONTranslator;
+import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -30,11 +31,22 @@ public class WebSocketCommunicator extends Endpoint {
             });
 
         } catch (DeploymentException | IOException | URISyntaxException e) {
-            throw new ResponseException(e.getMessage(), 500);
+            throw new ResponseException("Error connecting to server.", 500);
         }
     }
 
-
+    public void connect(String authToken, int gameID) throws ResponseException {
+        UserGameCommand connectCmd = new UserGameCommand(
+            UserGameCommand.CommandType.CONNECT,
+            authToken,
+            gameID
+        );
+        try {
+            this.session.getBasicRemote().sendText(jsonTranslator.toJson(connectCmd));
+        } catch (IOException e) {
+            throw new ResponseException("Error joining game", 500);
+        }
+    }
 
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
