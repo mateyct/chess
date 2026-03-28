@@ -11,15 +11,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class WebSocketCommunicator extends Endpoint {
-    private NotificationHandler notificationHandler;
+    private final NotificationHandler notificationHandler;
     private Session session;
     private JSONTranslator jsonTranslator;
 
-    public WebSocketCommunicator(String url, NotificationHandler notificationHandler) throws ResponseException {
+    public WebSocketCommunicator(String url, int port, NotificationHandler notificationHandler) throws ResponseException {
         this.notificationHandler = notificationHandler;
         jsonTranslator = new JSONTranslator();
         try {
             url = url.replace("http", "ws");
+            url += ":" + port;
             URI socketURI = new URI(url + "/ws");
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
@@ -27,7 +28,7 @@ public class WebSocketCommunicator extends Endpoint {
 
             this.session.addMessageHandler((MessageHandler.Whole<String>) message -> {
                 ServerMessage serverMsg = jsonTranslator.translateObject(message, ServerMessage.class);
-                notificationHandler.notify(serverMsg);
+                this.notificationHandler.notify(serverMsg);
             });
 
         } catch (DeploymentException | IOException | URISyntaxException e) {

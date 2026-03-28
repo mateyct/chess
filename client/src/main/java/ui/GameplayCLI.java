@@ -12,9 +12,9 @@ public class GameplayCLI implements NotificationHandler {
     private WebSocketCommunicator ws;
     private int gameID;
 
-    public GameplayCLI(String url, String authToken, int gameID) throws ResponseException {
+    public GameplayCLI(String url, String authToken, int gameID, int port) throws ResponseException {
         this.authToken = authToken;
-        this.ws = new WebSocketCommunicator(url, this);
+        this.ws = new WebSocketCommunicator(url, port, this);
         this.gameID = gameID;
         this.ws.connect(authToken, gameID);
     }
