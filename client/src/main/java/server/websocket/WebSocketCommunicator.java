@@ -1,8 +1,10 @@
 package server.websocket;
 
+import chess.ChessMove;
 import exception.ResponseException;
 import jakarta.websocket.*;
 import util.JSONTranslator;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorServerMessage;
 import websocket.messages.LoadGameServerMessage;
@@ -87,6 +89,19 @@ public class WebSocketCommunicator extends Endpoint {
             this.session.getBasicRemote().sendText(jsonTranslator.toJson(leaveCmd));
         } catch (IOException e) {
             throw new ResponseException("Error leaving game", 500);
+        }
+    }
+
+    public void makeMove(String authToken, int gameID, ChessMove move) throws ResponseException {
+        MakeMoveCommand moveCommand = new MakeMoveCommand(
+            authToken,
+            gameID,
+            move
+        );
+        try {
+            this.session.getBasicRemote().sendText(jsonTranslator.toJson(moveCommand));
+        } catch (IOException e) {
+            throw new ResponseException("Error making move", 500);
         }
     }
 

@@ -1,5 +1,7 @@
 package util;
 
+import chess.ChessPiece;
+
 import java.util.Map;
 
 public class Constants {
@@ -23,5 +25,12 @@ public class Constants {
         "f", 6,
         "g", 7,
         "h", 8
+    );
+
+    public static final Map<String, ChessPiece.PieceType> LETTER_PIECE_TYPE_MAP = Map.of(
+        "Q", ChessPiece.PieceType.QUEEN,
+        "N", ChessPiece.PieceType.KNIGHT,
+        "R", ChessPiece.PieceType.ROOK,
+        "B", ChessPiece.PieceType.BISHOP
     );
 }

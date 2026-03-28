@@ -1,6 +1,8 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import exception.ResponseException;
 import server.websocket.NotificationHandler;
@@ -63,6 +65,7 @@ public class GameplayCLI implements NotificationHandler {
             5: Leave
             6: Resign""";
             switch (CLIUtils.getIntInput(prompt, 6, scan)) {
+                case 1 -> makeMove();
                 case 2 -> redrawBoard();
                 case 3 -> highlightMoves();
                 case 5 -> {
@@ -100,6 +103,35 @@ public class GameplayCLI implements NotificationHandler {
         }
         ClientChessBoard chessDrawer = new ClientChessBoard();
         chessDrawer.drawLegalMoves(chessGame, selectedPos, gameRole == GameConnectionRole.BLACK_PLAYER);
+    }
+
+    private void makeMove() throws ResponseException {
+        ChessMove chessMove;
+        try {
+            String posStr = CLIUtils.getStringInput("Input move: ", scan);
+            chessMove = parseMove(posStr);
+        } catch (InvalidParameterException e) {
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + e.getMessage() + EscapeSequences.RESET_TEXT_COLOR);
+            return;
+        }
+        ws.makeMove(authToken, gameID, chessMove);
+    }
+
+    private ChessMove parseMove(String moveStr) {
+        if (moveStr.length() < 4 || moveStr.length() > 5) {
+            throw new InvalidParameterException("Invalid move input, wrong length");
+        }
+        ChessPosition start = parsePosition(moveStr.substring(0, 2));
+        ChessPosition end = parsePosition(moveStr.substring(2, 4));
+        ChessPiece.PieceType promotion = null;
+        if (moveStr.length() == 5) {
+            String promotionStr = moveStr.substring(4, 5);
+            if (!Constants.LETTER_PIECE_TYPE_MAP.containsKey(promotionStr)) {
+                throw new InvalidParameterException("Invalid move input, not valid promotion piece");
+            }
+            promotion = Constants.LETTER_PIECE_TYPE_MAP.get(promotionStr);
+        }
+        return new ChessMove(start, end, promotion);
     }
 
     private ChessPosition parsePosition(String posStr) {
