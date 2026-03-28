@@ -26,6 +26,14 @@ public class GameplayCLI implements NotificationHandler {
 
     private ChessGame chessGame;
 
+    private static String PROMPT_STRING = """
+            1: Make Move
+            2: Redraw Board
+            3: Highlight Legal Moves
+            4: Help
+            5: Leave
+            6: Resign""";
+
     public GameplayCLI(String url, String authToken, int gameID, int port, GameConnectionRole role) throws ResponseException {
         this.authToken = authToken;
         this.ws = new WebSocketCommunicator(url, port, this);
@@ -52,22 +60,33 @@ public class GameplayCLI implements NotificationHandler {
         ClientChessBoard chessDrawer = new ClientChessBoard();
         chessGame = message.getGame();
         chessDrawer.draw(chessGame.getBoard(), gameRole == GameConnectionRole.BLACK_PLAYER);
+        System.out.println(PROMPT_STRING);
     }
 
     private void gameplayLoop() throws ResponseException {
         boolean loop = true;
         while (loop) {
-            String prompt = """
-            1: Make Move
-            2: Redraw Board
-            3: Highlight Legal Moves
-            4: Help
-            5: Leave
-            6: Resign""";
-            switch (CLIUtils.getIntInput(prompt, 6, scan)) {
+            switch (CLIUtils.getIntInput(PROMPT_STRING, 6, scan)) {
                 case 1 -> makeMove();
                 case 2 -> redrawBoard();
                 case 3 -> highlightMoves();
+                case 4 -> {
+                    String help = """
+                    --------------------------Help---------------------------------------------------------------
+                    |  Make Move ------- move piece, form "a2b3" or "a7a8Q" (Q/N/R/B is optional for promotion) |
+                    |                                                                                           |
+                    |  Redraw Board ---- draw most recent board again                                           |
+                    |                                                                                           |
+                    |  Highlight Moves - highlight moves for given piece (form "a2")                            |
+                    |                                                                                           |
+                    |  Help ------------ print help dialogue                                                    |
+                    |                                                                                           |
+                    |  Leave ----------- leave the game                                                         |
+                    |                                                                                           |
+                    |  Resign ---------- end the game                                                           |
+                    ---------------------------------------------------------------------------------------------""";
+                    System.out.println(help);
+                }
                 case 5 -> {
                     loop = false;
                     leaveGame();
