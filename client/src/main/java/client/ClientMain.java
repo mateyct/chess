@@ -229,10 +229,4 @@ public class ClientMain {
         );
         gameplayCLI.gameplayLoop();
     }
-
-    private static void drawTestBoard(boolean reversed) {
-        ClientChessBoard board = new ClientChessBoard();
-        ChessGame game = new ChessGame();
-        board.draw(game.getBoard(), reversed);
-    }
 }

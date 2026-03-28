@@ -180,6 +180,7 @@ public class ServerFacadeTests {
             assertTrue(result.getGameID() > 0);
         });
         assertDoesNotThrow(() -> {
+            facade.listGames();
             facade.joinGame(1, "WHITE");
         });
     }
@@ -198,6 +199,7 @@ public class ServerFacadeTests {
             assertTrue(result.getGameID() > 0);
         });
         assertDoesNotThrow(() -> {
+            facade.listGames();
             facade.joinGame(1, "WHITE");
         });
         assertThrows(ResponseException.class, () -> {
