@@ -215,7 +215,7 @@ public class ClientMain {
             return;
         }
         int gameID = getIntInput(
-            "Enter gameID of the game you want to play:",
+            "Enter gameID of the game you want to observe:",
             gameCount,
             scan
         );
