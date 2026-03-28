@@ -68,6 +68,7 @@ public class ServerFacade {
         if (!signedIn()) {
             throw new ResponseException("Cannot make request, not logged in.", 500);
         }
+        gameID = gameIDMap.get(gameID);
         JoinGameRequest request = new JoinGameRequest(playerColor, gameID, null);
         var response = clientCommunicator.put("/game", request, authToken);
         handleResponse(response, JoinGameResult.class);
