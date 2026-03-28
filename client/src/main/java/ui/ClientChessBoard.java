@@ -46,6 +46,10 @@ public class ClientChessBoard {
     public void drawLegalMoves(ChessGame game, ChessPosition pos, boolean reversed) {
         legalMoves = new HashSet<>();
         var validMoves = game.validMoves(pos);
+        if (validMoves == null) {
+            System.out.println(SET_TEXT_COLOR_RED + "No piece selected." + RESET_TEXT_COLOR);
+            return;
+        }
         for (ChessMove move : validMoves) {
             legalMoves.add(move.getEndPosition());
         }

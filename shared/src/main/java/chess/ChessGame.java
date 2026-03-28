@@ -78,22 +78,24 @@ public class ChessGame {
         return checkedMoves;
     }
 
-    public boolean validMove(ChessMove move, TeamColor userColor) {
+    public void assertValidMove(ChessMove move, TeamColor userColor) throws InvalidMoveException {
         if (gameOver) {
-            return false;
+            throw new InvalidMoveException("Game is over, no more moves can be made.");
         }
         ChessPiece piece = board.getPiece(move.getStartPosition());
         if (piece == null) {
-            return false;
+            throw new InvalidMoveException("No piece selected, cannot move.");
         }
         if (userColor != null && piece.getTeamColor() != userColor) {
-            return false;
+            throw new InvalidMoveException("Cannot move piece that isn't your color.");
         }
         if (piece.getTeamColor() != currentTeam) {
-            return false;
+            throw new InvalidMoveException("Cannot move piece out of turn.");
         }
         Collection<ChessMove> moves = validMoves(move.getStartPosition());
-        return moves.contains(move);
+        if (!moves.contains(move)) {
+            throw new InvalidMoveException("Invalid move.");
+        }
     }
 
     /**
@@ -103,13 +105,7 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if (gameOver) {
-            throw new InvalidMoveException("No more moves can be made.");
-        }
-        boolean validMove = validMove(move, null);
-        if (!validMove) {
-            throw new InvalidMoveException("Attempted to move piece out of turn.");
-        }
+        assertValidMove(move, null);
         ChessPiece piece = board.getPiece(move.getStartPosition());
         board.addPiece(move.getStartPosition(), null);
         testBoard.addPiece(move.getStartPosition(), null);

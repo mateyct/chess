@@ -26,7 +26,6 @@ import websocket.messages.NotificationServerMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
-import java.util.Map;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
@@ -214,8 +213,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ChessGame.TeamColor userColor = connectionRole == GameConnectionRole.BLACK_PLAYER ?
             ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
         ChessMove move = command.getMove();
-        if (!chessGame.validMove(move, userColor)) {
-            ServerMessage msg = new ErrorServerMessage("Cannot move piece that isn't your color");
+        try {
+            chessGame.assertValidMove(move, userColor);
+        } catch (InvalidMoveException e) {
+            ServerMessage msg = new ErrorServerMessage(e.getMessage());
             connections.messageSession(session, msg);
             return;
         }
