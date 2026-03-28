@@ -49,6 +49,7 @@
                             </archive>
                             <descriptors>
                                 <descriptor>../test-dependencies-assembly.xml</descriptor>
+                                <descriptor>../jar-with-dependencies.xml</descriptor>
                             </descriptors>
                         </configuration>
                     </execution>
