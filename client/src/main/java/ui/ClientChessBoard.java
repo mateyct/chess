@@ -41,10 +41,6 @@ public class ClientChessBoard {
         ChessPiece.PieceType.PAWN, WHITE_PAWN
     );
 
-    public ClientChessBoard() {
-
-    }
-
     public void draw(ChessBoard board, boolean reversed) {
         drawAbc(reversed);
         int increment = reversed ? 1 : -1;

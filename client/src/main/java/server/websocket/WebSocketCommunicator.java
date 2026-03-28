@@ -4,6 +4,9 @@ import exception.ResponseException;
 import jakarta.websocket.*;
 import util.JSONTranslator;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorServerMessage;
+import websocket.messages.LoadGameServerMessage;
+import websocket.messages.NotificationServerMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -28,7 +31,29 @@ public class WebSocketCommunicator extends Endpoint {
 
             this.session.addMessageHandler((MessageHandler.Whole<String>) message -> {
                 ServerMessage serverMsg = jsonTranslator.translateObject(message, ServerMessage.class);
-                this.notificationHandler.notify(serverMsg);
+                switch (serverMsg.getServerMessageType()) {
+                    case NOTIFICATION -> {
+                        NotificationServerMessage msg = jsonTranslator.translateObject(
+                            message,
+                            NotificationServerMessage.class
+                        );
+                        this.notificationHandler.handleNotification(msg);
+                    }
+                    case ERROR -> {
+                        ErrorServerMessage msg = jsonTranslator.translateObject(
+                            message,
+                            ErrorServerMessage.class
+                        );
+                        this.notificationHandler.handleError(msg);
+                    }
+                    case LOAD_GAME -> {
+                        LoadGameServerMessage msg = jsonTranslator.translateObject(
+                            message,
+                            LoadGameServerMessage.class
+                        );
+                        this.notificationHandler.handleLoadGame(msg);
+                    }
+                }
             });
 
         } catch (DeploymentException | IOException | URISyntaxException e) {
