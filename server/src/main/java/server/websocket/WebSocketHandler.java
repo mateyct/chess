@@ -158,7 +158,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             throw new ResponseException("Only players can resign the game", 400);
         }
         if (game.game().getGameOver()){
-            throw new ResponseException("Cannot resign twice, game is over", 400);
+            throw new ResponseException("Game is already over, cannot resign", 400);
         }
         game.game().setGameOver();
         gameDAO.updateGame(game.gameId(), game);
@@ -170,9 +170,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
         ServerMessage moveNotification = new NotificationServerMessage(
-            username + " moved piece from " + startPosition.getRow() +
-                Constants.POSITION_LETTER_MAP.get(startPosition.getColumn()) +
-                " to " + endPosition.getRow() + Constants.POSITION_LETTER_MAP.get(endPosition.getColumn()) + "."
+            username + " moved piece from " + Constants.POSITION_LETTER_MAP.get(startPosition.getColumn()) +
+            startPosition.getRow() + " to " + Constants.POSITION_LETTER_MAP.get(endPosition.getColumn()) +
+            endPosition.getRow() + "."
         );
         connections.broadcast(gameID, session, moveNotification);
     }

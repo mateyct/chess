@@ -118,6 +118,9 @@ public class ChessGame {
             testBoard.addPiece(move.getEndPosition(), piece);
         }
         currentTeam = currentTeam == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+        if (isInCheckmate(currentTeam) || isInStalemate(currentTeam)) {
+            gameOver = true;
+        }
     }
 
     /**
@@ -364,7 +367,6 @@ public class ChessGame {
                 return false;
             }
         }
-        gameOver = true;
         return true;
     }
 
@@ -385,7 +387,6 @@ public class ChessGame {
                 return false;
             }
         }
-        gameOver = true;
         return true;
     }
 
