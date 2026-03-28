@@ -16,7 +16,8 @@ public class ListGamesResult extends Result {
                 game.gameId(),
                 game.whiteUsername(),
                 game.blackUsername(),
-                game.gameName()
+                game.gameName(),
+                game.game().getGameOver()
             ));
         }
     }
@@ -26,6 +27,6 @@ public class ListGamesResult extends Result {
     }
 
     public record GameMetadata(int gameID, String whiteUsername, String blackUsername,
-                               String gameName) {
+                               String gameName, boolean gameOver) {
     }
 }

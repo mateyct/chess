@@ -162,16 +162,21 @@ public class ClientMain {
         StringBuilder listString = new StringBuilder();
         int i = 1;
         for (ListGamesResult.GameMetadata data : result.getGames()) {
-            listString.append("ID: ").append(i).append("; ");
-            listString.append("Game Name: ").append(data.gameName()).append("; ");
-            String whiteUsername = data.whiteUsername() == null ? "[EMPTY]" : data.whiteUsername();
-            String blackUsername = data.blackUsername() == null ? "[EMPTY]" : data.blackUsername();
-            listString.append("White Username: ").append(whiteUsername).append("; ");
-            listString.append("Black Username: ").append(blackUsername).append("; ");
-            listString.append("\n");
+            printGameInfo(data, listString, i);
             i++;
         }
         clearPrint(listString.toString());
+    }
+
+    private void printGameInfo(ListGamesResult.GameMetadata data, StringBuilder builder, int index) {
+        builder.append(index).append(" ").append(data.gameName()).append(": ");
+        if (data.gameOver()) {
+            builder.append(EscapeSequences.SET_TEXT_COLOR_RED).append("Game Over").append(EscapeSequences.RESET_TEXT_COLOR);
+        }
+        builder.append("\n");
+        builder.append("    White Player: ").append(data.whiteUsername() == null ? "[EMPTY]" : data.whiteUsername()).append("\n");
+        builder.append("    Black Player: ").append(data.blackUsername() == null ? "[EMPTY]" : data.blackUsername()).append("\n");
+        builder.append("\n");
     }
 
     private void joinGame() throws ResponseException {
