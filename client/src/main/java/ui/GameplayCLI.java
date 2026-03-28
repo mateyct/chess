@@ -1,14 +1,17 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessPosition;
 import exception.ResponseException;
 import server.websocket.NotificationHandler;
 import server.websocket.WebSocketCommunicator;
+import util.Constants;
 import websocket.commands.GameConnectionRole;
 import websocket.messages.ErrorServerMessage;
 import websocket.messages.LoadGameServerMessage;
 import websocket.messages.NotificationServerMessage;
 
+import java.security.InvalidParameterException;
 import java.util.Scanner;
 
 public class GameplayCLI implements NotificationHandler {
@@ -61,6 +64,7 @@ public class GameplayCLI implements NotificationHandler {
             6: Resign""";
             switch (CLIUtils.getIntInput(prompt, 6, scan)) {
                 case 2 -> redrawBoard();
+                case 3 -> highlightMoves();
                 case 5 -> {
                     loop = false;
                     leaveGame();
@@ -79,5 +83,44 @@ public class GameplayCLI implements NotificationHandler {
         }
         ClientChessBoard chessDrawer = new ClientChessBoard();
         chessDrawer.draw(chessGame.getBoard(), gameRole == GameConnectionRole.BLACK_PLAYER);
+    }
+
+    private void highlightMoves() {
+        if (chessGame == null) {
+            System.out.println("Cannot highlight moves, no chess board");
+            return;
+        }
+        ChessPosition selectedPos;
+        try {
+            String posStr = CLIUtils.getStringInput("Input position: ", scan);
+            selectedPos = parsePosition(posStr);
+        } catch (InvalidParameterException e) {
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + e.getMessage() + EscapeSequences.RESET_TEXT_COLOR);
+            return;
+        }
+        ClientChessBoard chessDrawer = new ClientChessBoard();
+        chessDrawer.drawLegalMoves(chessGame, selectedPos, gameRole == GameConnectionRole.BLACK_PLAYER);
+    }
+
+    private ChessPosition parsePosition(String posStr) {
+        if (posStr.length() != 2) {
+            throw new InvalidParameterException("Invalid position input, wrong length");
+        }
+        String letter = posStr.substring(0, 1);
+        String number = posStr.substring(1, 2);
+        if (!Constants.LETTER_POSITION_MAP.containsKey(letter)) {
+            throw new InvalidParameterException("Invalid position input, not valid column");
+        }
+        int col = Constants.LETTER_POSITION_MAP.get(letter);
+        int row = 0;
+        try {
+            row = Integer.parseInt(number);
+        } catch (NumberFormatException e) {
+            throw new InvalidParameterException("Invalid position input, not valid row");
+        }
+        if (row < 1 || row > 8) {
+            throw new InvalidParameterException("Invalid position input, not valid row");
+        }
+        return new ChessPosition(row, col);
     }
 }

@@ -7,7 +7,6 @@ import chess.InvalidMoveException;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
-import dataaccess.UserDAO;
 import exception.BadGameDataException;
 import exception.InvalidCredentialsException;
 import exception.ResponseException;
@@ -16,6 +15,7 @@ import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
+import util.Constants;
 import util.JSONTranslator;
 import websocket.commands.GameConnectionRole;
 import websocket.commands.MakeMoveCommand;
@@ -34,17 +34,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private final JSONTranslator translator;
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
-
-    private static final Map<Integer, String> POSITION_LETTER_MAP = Map.of(
-        1, "a",
-        2, "b",
-        3, "c",
-        4, "d",
-        5, "e",
-        6, "f",
-        7, "g",
-        8, "h"
-    );
 
     public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
@@ -183,8 +172,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ChessPosition endPosition = move.getEndPosition();
         ServerMessage moveNotification = new NotificationServerMessage(
             username + " moved piece from " + startPosition.getRow() +
-                POSITION_LETTER_MAP.get(startPosition.getColumn()) +
-                " to " + endPosition.getRow() + POSITION_LETTER_MAP.get(endPosition.getColumn()) + "."
+                Constants.POSITION_LETTER_MAP.get(startPosition.getColumn()) +
+                " to " + endPosition.getRow() + Constants.POSITION_LETTER_MAP.get(endPosition.getColumn()) + "."
         );
         connections.broadcast(gameID, session, moveNotification);
     }

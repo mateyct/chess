@@ -1,11 +1,10 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static ui.EscapeSequences.*;
 
@@ -22,6 +21,9 @@ public class ClientChessBoard {
         " h ",
         EMPTY
     };
+
+    private Set<ChessPosition> legalMoves;
+    private ChessPosition startPosition;
 
     private static final Map<ChessPiece.PieceType, String> BLACK_PIECE_MAP = Map.of(
         ChessPiece.PieceType.KING, BLACK_KING,
@@ -41,6 +43,16 @@ public class ClientChessBoard {
         ChessPiece.PieceType.PAWN, WHITE_PAWN
     );
 
+    public void drawLegalMoves(ChessGame game, ChessPosition pos, boolean reversed) {
+        legalMoves = new HashSet<>();
+        var validMoves = game.validMoves(pos);
+        for (ChessMove move : validMoves) {
+            legalMoves.add(move.getEndPosition());
+        }
+        startPosition = pos;
+        draw(game.getBoard(), reversed);
+    }
+
     public void draw(ChessBoard board, boolean reversed) {
         drawAbc(reversed);
         int increment = reversed ? 1 : -1;
@@ -50,6 +62,8 @@ public class ClientChessBoard {
         }
         drawAbc(reversed);
         System.out.println(RESET_BG_COLOR + RESET_TEXT_COLOR);
+        legalMoves = null;
+        startPosition = null;
     }
 
     private void drawAbc(boolean reversed) {
@@ -68,13 +82,26 @@ public class ClientChessBoard {
         int increment = reversed ? -1 : 1;
         int start = reversed ? 8  : 1;
         for (int i = start; i >= 1 && i <= 8; i += increment) {
-            if ((rowNum + i) % 2 == 1) {
-                builder.append(SET_BG_COLOR_BLUE);
+            ChessPosition position = new ChessPosition(rowNum, i);
+            if (position.equals(startPosition)) {
+                builder.append(SET_BG_COLOR_YELLOW);
+            }
+            else if ((rowNum + i) % 2 == 1) {
+                if (legalMoves != null && legalMoves.contains(position)) {
+                    builder.append(SET_BG_COLOR_ALT_GREEN);
+                }
+                else {
+                    builder.append(SET_BG_COLOR_BLUE);
+                }
             }
             else {
-                builder.append(SET_BG_COLOR_LIGHT_GREY);
+                if (legalMoves != null && legalMoves.contains(position)) {
+                    builder.append(SET_BG_COLOR_GREEN);
+                }
+                else {
+                    builder.append(SET_BG_COLOR_LIGHT_GREY);
+                }
             }
-            ChessPosition position = new ChessPosition(rowNum, i);
             String pieceString = getPieceString(board.getPiece(position));
             builder.append(pieceString);
         }
