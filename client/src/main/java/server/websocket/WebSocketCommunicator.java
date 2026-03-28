@@ -77,6 +77,19 @@ public class WebSocketCommunicator extends Endpoint {
         }
     }
 
+    public void leave(String authToken, int gameID) throws ResponseException {
+        UserGameCommand leaveCmd = new UserGameCommand(
+            UserGameCommand.CommandType.LEAVE,
+            authToken,
+            gameID
+        );
+        try {
+            this.session.getBasicRemote().sendText(jsonTranslator.toJson(leaveCmd));
+        } catch (IOException e) {
+            throw new ResponseException("Error leaving game", 500);
+        }
+    }
+
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
         System.out.println("connected to ws");

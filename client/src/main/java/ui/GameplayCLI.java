@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessGame;
 import exception.ResponseException;
 import server.websocket.NotificationHandler;
 import server.websocket.WebSocketCommunicator;
@@ -18,6 +19,8 @@ public class GameplayCLI implements NotificationHandler {
     private GameConnectionRole gameRole;
     private Scanner scan;
 
+    private ChessGame chessGame;
+
     public GameplayCLI(String url, String authToken, int gameID, int port, GameConnectionRole role) throws ResponseException {
         this.authToken = authToken;
         this.ws = new WebSocketCommunicator(url, port, this);
@@ -26,6 +29,7 @@ public class GameplayCLI implements NotificationHandler {
         this.gameRole = role;
         scan = new Scanner(System.in);
         gameplayLoop();
+        chessGame = null;
     }
 
     @Override
@@ -41,14 +45,39 @@ public class GameplayCLI implements NotificationHandler {
     @Override
     public void handleLoadGame(LoadGameServerMessage message) {
         ClientChessBoard chessDrawer = new ClientChessBoard();
-        chessDrawer.draw(message.getGame().getBoard(), gameRole == GameConnectionRole.BLACK_PLAYER);
+        chessGame = message.getGame();
+        chessDrawer.draw(chessGame.getBoard(), gameRole == GameConnectionRole.BLACK_PLAYER);
     }
 
-    private void gameplayLoop() {
-        String input = "";
-        while (!input.equals("q")) {
-            String prompt = "What do you want to do?";
-            input = CLIUtils.getStringInput(prompt, scan);
+    private void gameplayLoop() throws ResponseException {
+        boolean loop = true;
+        while (loop) {
+            String prompt = """
+            1: Make Move
+            2: Redraw Board
+            3: Highlight Legal Moves
+            4: Help
+            5: Leave
+            6: Resign""";
+            switch (CLIUtils.getIntInput(prompt, 6, scan)) {
+                case 2 -> redrawBoard();
+                case 5 -> {
+                    loop = false;
+                    leaveGame();
+                }
+            }
         }
+    }
+
+    private void leaveGame() throws ResponseException {
+        ws.leave(authToken, gameID);
+    }
+
+    private void redrawBoard() {
+        if (chessGame == null) {
+            return;
+        }
+        ClientChessBoard chessDrawer = new ClientChessBoard();
+        chessDrawer.draw(chessGame.getBoard(), gameRole == GameConnectionRole.BLACK_PLAYER);
     }
 }
