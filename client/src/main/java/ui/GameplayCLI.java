@@ -91,6 +91,7 @@ public class GameplayCLI implements NotificationHandler {
                     loop = false;
                     leaveGame();
                 }
+                case 6 -> resign();
             }
         }
     }
@@ -134,6 +135,10 @@ public class GameplayCLI implements NotificationHandler {
             return;
         }
         ws.makeMove(authToken, gameID, chessMove);
+    }
+
+    private void resign() throws ResponseException {
+        ws.resign(authToken, gameID);
     }
 
     private ChessMove parseMove(String moveStr) {
