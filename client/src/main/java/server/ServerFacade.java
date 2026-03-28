@@ -90,6 +90,10 @@ public class ServerFacade {
         return authToken;
     }
 
+    public int getRealId(int indexID) {
+        return gameIDMap.get(indexID);
+    }
+
     private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {
         if (response.statusCode() >= 200 && response.statusCode() < 300) {
             return translator.translateObject(response.body(), responseClass);

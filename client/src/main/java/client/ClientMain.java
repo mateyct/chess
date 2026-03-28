@@ -205,10 +205,29 @@ public class ClientMain {
             port,
             colorChoice == 1 ? GameConnectionRole.WHITE_PLAYER : GameConnectionRole.BLACK_PLAYER
         );
+        gameplayCLI.gameplayLoop();
     }
 
     private void observeGame() throws ResponseException {
-        drawTestBoard(false);
+        int gameCount = serverFacade.getGameCount();
+        if (gameCount == 0) {
+            System.out.println("Please list games before joining.");
+            return;
+        }
+        int gameID = getIntInput(
+            "Enter gameID of the game you want to play:",
+            gameCount,
+            scan
+        );
+        gameID = serverFacade.getRealId(gameID);
+        GameplayCLI gameplayCLI = new GameplayCLI(
+            url,
+            serverFacade.getAuthToken(),
+            gameID,
+            port,
+            GameConnectionRole.OBSERVER
+        );
+        gameplayCLI.gameplayLoop();
     }
 
     private static void drawTestBoard(boolean reversed) {

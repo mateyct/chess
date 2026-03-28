@@ -41,7 +41,6 @@ public class GameplayCLI implements NotificationHandler {
         this.ws.connect(authToken, gameID);
         this.gameRole = role;
         scan = new Scanner(System.in);
-        gameplayLoop();
         chessGame = null;
     }
 
@@ -63,7 +62,7 @@ public class GameplayCLI implements NotificationHandler {
         System.out.println(PROMPT_STRING);
     }
 
-    private void gameplayLoop() throws ResponseException {
+    public void gameplayLoop() throws ResponseException {
         boolean loop = true;
         while (loop) {
             switch (CLIUtils.getIntInput(PROMPT_STRING, 6, scan)) {
