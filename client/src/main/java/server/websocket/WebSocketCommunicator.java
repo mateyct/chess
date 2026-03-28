@@ -29,29 +29,32 @@ public class WebSocketCommunicator extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
 
-            this.session.addMessageHandler((MessageHandler.Whole<String>) message -> {
-                ServerMessage serverMsg = jsonTranslator.translateObject(message, ServerMessage.class);
-                switch (serverMsg.getServerMessageType()) {
-                    case NOTIFICATION -> {
-                        NotificationServerMessage msg = jsonTranslator.translateObject(
-                            message,
-                            NotificationServerMessage.class
-                        );
-                        this.notificationHandler.handleNotification(msg);
-                    }
-                    case ERROR -> {
-                        ErrorServerMessage msg = jsonTranslator.translateObject(
-                            message,
-                            ErrorServerMessage.class
-                        );
-                        this.notificationHandler.handleError(msg);
-                    }
-                    case LOAD_GAME -> {
-                        LoadGameServerMessage msg = jsonTranslator.translateObject(
-                            message,
-                            LoadGameServerMessage.class
-                        );
-                        this.notificationHandler.handleLoadGame(msg);
+            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+                @Override
+                public void onMessage(String message) {
+                    ServerMessage serverMsg = jsonTranslator.translateObject(message, ServerMessage.class);
+                    switch (serverMsg.getServerMessageType()) {
+                        case NOTIFICATION -> {
+                            NotificationServerMessage msg = jsonTranslator.translateObject(
+                                message,
+                                NotificationServerMessage.class
+                            );
+                            notificationHandler.handleNotification(msg);
+                        }
+                        case ERROR -> {
+                            ErrorServerMessage msg = jsonTranslator.translateObject(
+                                message,
+                                ErrorServerMessage.class
+                            );
+                            notificationHandler.handleError(msg);
+                        }
+                        case LOAD_GAME -> {
+                            LoadGameServerMessage msg = jsonTranslator.translateObject(
+                                message,
+                                LoadGameServerMessage.class
+                            );
+                            notificationHandler.handleLoadGame(msg);
+                        }
                     }
                 }
             });
@@ -76,6 +79,6 @@ public class WebSocketCommunicator extends Endpoint {
 
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
-
+        System.out.println("connected to ws");
     }
 }

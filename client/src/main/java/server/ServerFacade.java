@@ -64,7 +64,7 @@ public class ServerFacade {
         return handleResponse(response, CreateGameResult.class);
     }
 
-    public void joinGame(int gameID, String playerColor) throws ResponseException {
+    public int joinGame(int gameID, String playerColor) throws ResponseException {
         if (!signedIn()) {
             throw new ResponseException("Cannot make request, not logged in.", 500);
         }
@@ -72,6 +72,7 @@ public class ServerFacade {
         JoinGameRequest request = new JoinGameRequest(playerColor, gameID, null);
         var response = clientCommunicator.put("/game", request, authToken);
         handleResponse(response, JoinGameResult.class);
+        return gameID;
     }
 
     public int getGameCount() {

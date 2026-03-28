@@ -9,6 +9,8 @@ import result.ListGamesResult;
 import server.ServerFacade;
 import ui.ClientChessBoard;
 import ui.EscapeSequences;
+import ui.GameplayCLI;
+import websocket.commands.GameConnectionRole;
 
 import java.util.Scanner;
 
@@ -18,6 +20,8 @@ import static ui.CLIUtils.getStringInput;
 public class ClientMain {
     private final Scanner scan;
     private final ServerFacade serverFacade;
+    private final String url;
+    private final int port;
 
     public static void main(String[] args) {
         String url = "http://localhost";
@@ -35,6 +39,8 @@ public class ClientMain {
         scan = new Scanner(System.in);
         serverFacade = new ServerFacade(url, port);
         System.out.println("Welcome! It's time to play chess.");
+        this.url = url;
+        this.port = port;
     }
 
     public void closeScanner() {
@@ -186,8 +192,14 @@ public class ClientMain {
             2,
             scan);
         String color = colorChoice == 1 ? "WHITE" : "BLACK";
-        serverFacade.joinGame(gameID, color);
-        drawTestBoard(colorChoice == 2);
+        int serverGameID = serverFacade.joinGame(gameID, color);
+        GameplayCLI gameplayCLI = new GameplayCLI(
+            url,
+            serverFacade.getAuthToken(),
+            serverGameID,
+            port,
+            colorChoice == 1 ? GameConnectionRole.WHITE_PLAYER : GameConnectionRole.BLACK_PLAYER
+        );
     }
 
     private void observeGame() throws ResponseException {
