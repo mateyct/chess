@@ -1,7 +1,7 @@
 package server.websocket;
 
 import org.eclipse.jetty.websocket.api.Session;
-import util.JSONTranslator;
+import sharedutil.JSONTranslator;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;

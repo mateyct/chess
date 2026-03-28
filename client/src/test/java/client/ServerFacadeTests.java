@@ -187,21 +187,7 @@ public class ServerFacadeTests {
 
     @Test
     void testJoinGameInvalid() {
-        RegisterRequest request = new RegisterRequest("User", "Pass", "Email");
-        assertFalse(facade.signedIn());
-        assertDoesNotThrow(() -> {
-            facade.register(request);
-        });
-        assertTrue(facade.signedIn());
-        CreateGameRequest createGameRequest = new CreateGameRequest("Epic Game");
-        assertDoesNotThrow(() -> {
-            CreateGameResult result = facade.createGame(createGameRequest);
-            assertTrue(result.getGameID() > 0);
-        });
-        assertDoesNotThrow(() -> {
-            facade.listGames();
-            facade.joinGame(1, "WHITE");
-        });
+        testJoinGameValid();
         assertThrows(ResponseException.class, () -> {
             facade.joinGame(1, "WHITE");
         });

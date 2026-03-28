@@ -3,7 +3,7 @@ package server.websocket;
 import chess.ChessMove;
 import exception.ResponseException;
 import jakarta.websocket.*;
-import util.JSONTranslator;
+import sharedutil.JSONTranslator;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorServerMessage;

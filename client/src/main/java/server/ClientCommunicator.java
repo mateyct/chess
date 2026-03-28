@@ -1,7 +1,7 @@
 package server;
 
 import exception.ResponseException;
-import util.JSONTranslator;
+import sharedutil.JSONTranslator;
 
 import java.net.URI;
 import java.net.http.HttpClient;

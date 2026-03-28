@@ -7,7 +7,7 @@ import chess.ChessPosition;
 import exception.ResponseException;
 import server.websocket.NotificationHandler;
 import server.websocket.WebSocketCommunicator;
-import util.Constants;
+import sharedutil.Constants;
 import websocket.commands.GameConnectionRole;
 import websocket.messages.ErrorServerMessage;
 import websocket.messages.LoadGameServerMessage;
@@ -26,7 +26,7 @@ public class GameplayCLI implements NotificationHandler {
 
     private ChessGame chessGame;
 
-    private static String PROMPT_STRING = """
+    private static final String PROMPT_STRING = """
             1: Make Move
             2: Redraw Board
             3: Highlight Legal Moves

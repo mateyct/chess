@@ -3,7 +3,7 @@ package server;
 import exception.ResponseException;
 import request.*;
 import result.*;
-import util.JSONTranslator;
+import sharedutil.JSONTranslator;
 
 import java.net.http.HttpResponse;
 import java.util.HashMap;

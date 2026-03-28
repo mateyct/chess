@@ -1,4 +1,4 @@
-package util;
+package sharedutil;
 
 import chess.ChessPiece;
 
