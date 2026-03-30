@@ -14,6 +14,7 @@ import websocket.messages.LoadGameServerMessage;
 import websocket.messages.NotificationServerMessage;
 
 import java.security.InvalidParameterException;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class GameplayCLI implements NotificationHandler {
@@ -137,7 +138,13 @@ public class GameplayCLI implements NotificationHandler {
     }
 
     private void resign() throws ResponseException {
-        ws.resign(authToken, gameID);
+        String confirm = CLIUtils.getStringInput("Are you sure you want to resign? (y/N)", scan);
+        if (confirm.toLowerCase(Locale.getDefault()).equals("y")) {
+            ws.resign(authToken, gameID);
+        }
+        else {
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Did not resign!" + EscapeSequences.RESET_TEXT_COLOR);
+        }
     }
 
     private ChessMove parseMove(String moveStr) {
